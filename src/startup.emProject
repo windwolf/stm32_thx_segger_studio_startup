@@ -105,7 +105,7 @@
     <folder
       Name="Drivers"
       exclude=""
-      filter=""
+      filter="*.c;*.cpp;*.hpp;*.h;*.md"
       path="drivers"
       recurse="Yes" />
     <configuration Name="Debug" c_preprocessor_definitions="DEBUG" />
