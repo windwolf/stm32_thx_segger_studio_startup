@@ -123,13 +123,14 @@ place in Backup_RAM1                        { section .Backup_RAM1, section .Bac
 // RAM Placement
 //
                     
-
+place at end of DTCM_RAM1                   { block stack };                                        // Stack reserved block at the end
 place in RAM_DATA with auto order           { block tls,                                            // Thread-local-storage block
                                               readwrite,                                            // Catch-all for initialized/uninitialized data sections (e.g. .data, .noinit)
                                               zeroinit                                              // Catch-all for zero-initialized data sections (e.g. .bss)
                                             };
+
 place in RAM_DATA                           { block heap };                                         // Heap reserved block
-place at end of RAM_DATA                    { block stack };                                        // Stack reserved block at the end
+
 
 
 define block code_tx { section .text.tx_*, section .text._tx_*, section .text._txe_*, section .text._txr_* };

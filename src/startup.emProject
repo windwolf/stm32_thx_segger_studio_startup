@@ -102,12 +102,96 @@
         filter=""
         unity_build_exclude_filter="*template*" />
     </folder>
-    <folder
-      Name="Drivers"
-      exclude=""
-      filter="*.c;*.cpp;*.hpp;*.h;*.md"
-      path="drivers"
-      recurse="Yes" />
+    <folder Name="Drivers">
+      <folder Name="basic">
+        <folder Name="inc">
+          <folder Name="basic">
+            <file file_name="drivers/basic/inc/basic/buffer.h" />
+            <file file_name="drivers/basic/inc/basic/command.h" />
+            <file file_name="drivers/basic/inc/basic/device.h" />
+            <file file_name="drivers/basic/inc/basic/packet_io_device.h" />
+            <file file_name="drivers/basic/inc/basic/pin.h" />
+            <file file_name="drivers/basic/inc/basic/pin_device.h" />
+            <file file_name="drivers/basic/inc/basic/reg_io_device.h" />
+            <file file_name="drivers/basic/inc/basic/ring_buffer8.h" />
+            <file file_name="drivers/basic/inc/basic/shared.h" />
+            <file file_name="drivers/basic/inc/basic/stream.h" />
+            <file file_name="drivers/basic/inc/basic/stream_io_device.h" />
+          </folder>
+        </folder>
+        <folder Name="src">
+          <file file_name="drivers/basic/src/command_base.c" />
+          <file file_name="drivers/basic/src/command_master.c" />
+          <file file_name="drivers/basic/src/pin.c" />
+          <file file_name="drivers/basic/src/ring_buffer8.c" />
+          <file file_name="drivers/basic/src/simple_command.c" />
+          <file file_name="drivers/basic/src/stream.c" />
+        </folder>
+      </folder>
+      <folder Name="bsp">
+        <folder Name="stm32h750">
+          <folder Name="inc">
+            <file file_name="drivers/bsp/stm32h750/inc/bsp.h" />
+            <file file_name="drivers/bsp/stm32h750/inc/packet_io_device_soft_spi.h" />
+            <file file_name="drivers/bsp/stm32h750/inc/packet_io_device_spi.h" />
+            <file file_name="drivers/bsp/stm32h750/inc/pin_gpio.h" />
+            <file file_name="drivers/bsp/stm32h750/inc/reg_io_device_i2c.h" />
+            <file file_name="drivers/bsp/stm32h750/inc/stream_io_device_uart.h" />
+          </folder>
+          <folder Name="src">
+            <file file_name="drivers/bsp/stm32h750/src/packet_io_device_soft_spi.c" />
+            <file file_name="drivers/bsp/stm32h750/src/packet_io_device_spi.c" />
+            <file file_name="drivers/bsp/stm32h750/src/pin_gpio.c" />
+            <file file_name="drivers/bsp/stm32h750/src/reg_io_device_i2c.c" />
+            <file file_name="drivers/bsp/stm32h750/src/stream_device_uart.c" />
+          </folder>
+        </folder>
+      </folder>
+      <file file_name="drivers/drivers_user_sample.h" />
+      <folder Name="os">
+        <folder Name="threadx">
+          <folder Name="inc_">
+            <folder Name="os">
+              <file file_name="drivers/os/threadx/inc_/os/os.hpp" />
+              <file file_name="drivers/os/threadx/inc_/os/os_event.hpp" />
+              <file file_name="drivers/os/threadx/inc_/os/os_thread.hpp" />
+            </folder>
+          </folder>
+          <folder Name="src">
+            <file file_name="drivers/os/threadx/src/os_event.cpp" />
+            <file file_name="drivers/os/threadx/src/os_thread.cpp" />
+          </folder>
+        </folder>
+      </folder>
+      <file file_name="drivers/README.md" />
+      <folder Name="st77xx">
+        <folder Name="inc">
+          <folder Name="st77xx">
+            <file file_name="drivers/st77xx/inc/st77xx/st7735.h" />
+            <file file_name="drivers/st77xx/inc/st77xx/st7789.h" />
+            <file file_name="drivers/st77xx/inc/st77xx/st77xx.h" />
+          </folder>
+        </folder>
+        <folder Name="src">
+          <file file_name="drivers/st77xx/src/st7735.c" />
+          <file file_name="drivers/st77xx/src/st7789.c" />
+          <file file_name="drivers/st77xx/src/st77xx.c" />
+        </folder>
+      </folder>
+      <file file_name="drivers/todo.md" />
+      <folder Name="w25qxx">
+        <folder Name="inc">
+          <folder Name="w25qxx">
+            <file file_name="drivers/w25qxx/inc/w25qxx/w25qxx_base.h" />
+            <file file_name="drivers/w25qxx/inc/w25qxx/w25qxx_qspi.h" />
+            <file file_name="drivers/w25qxx/inc/w25qxx/w25qxx_spi.h" />
+          </folder>
+        </folder>
+        <file file_name="drivers/w25qxx/w25qxx_base.c" />
+        <file file_name="drivers/w25qxx/w25qxx_qspi.c" />
+        <file file_name="drivers/w25qxx/w25qxx_spi.c" />
+      </folder>
+    </folder>
     <configuration Name="Debug" c_preprocessor_definitions="DEBUG" />
   </project>
   <configuration
