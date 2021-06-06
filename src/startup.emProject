@@ -63,6 +63,8 @@
       <file file_name="STM32H7xx/Source/STM32H750x_Vectors.s">
         <configuration Name="Common" file_type="Assembly" />
       </file>
+      <file file_name="STM32H7xx/Source/HardFaultHandler.S" />
+      <file file_name="STM32H7xx/Source/SEGGER_HardFaultHandler.c" />
     </folder>
     <folder Name="CubeMx">
       <folder
@@ -105,6 +107,7 @@
       filter=""
       path="drivers"
       recurse="Yes" />
+    <configuration Name="Debug" c_preprocessor_definitions="DEBUG" />
   </project>
   <configuration
     Name="Debug"
