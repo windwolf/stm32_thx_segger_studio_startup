@@ -57,6 +57,7 @@ dkms.conf
 # ozone
 *.jdebug
 *.jdebug.user
+*.jlink
 
 # logic
 *.sal
