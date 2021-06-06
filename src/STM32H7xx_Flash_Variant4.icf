@@ -59,8 +59,8 @@ define memory with size = 4G;
 // Combined regions per memory type
 //
 define region FLASH = FLASH1;
-define region RAM   = ITCM_RAM1 + DTCM_RAM1 + AXI_RAM1;
-
+define region RAM_CODE   = ITCM_RAM1;
+define region RAM_DATA   = DTCM_RAM1 + AXI_RAM1;
 //
 // Block definitions
 //
@@ -75,6 +75,8 @@ define block tls                            { block tbss, block tdata };
 define block tdata_load                     { copy of block tdata };
 define block heap  with size = __HEAPSIZE__,  alignment = 8, /* fill =0x00, */ readwrite access { };
 define block stack with size = __STACKSIZE__, alignment = 8, /* fill =0xCD, */ readwrite access { };
+
+
 //
 // Explicit initialization settings for sections
 // Packing options for initialize by copy: packing=auto/lzss/zpak/packbits
@@ -104,6 +106,8 @@ place in FLASH with minimum size order      { block tdata_load,                 
                                               readexec                                              // Catch-all for (readonly) executable code (e.g. .text)
                                             };
 
+
+
 //
 // Explicit placement in RAMn
 //
@@ -118,11 +122,40 @@ place in Backup_RAM1                        { section .Backup_RAM1, section .Bac
 //
 // RAM Placement
 //
-place at start of RAM                       { block vectors_ram };
-place in RAM with auto order                { section .fast, section .fast.*,                       // "ramfunc" section
-                                              block tls,                                            // Thread-local-storage block
+                    
+
+place in RAM_DATA with auto order           { block tls,                                            // Thread-local-storage block
                                               readwrite,                                            // Catch-all for initialized/uninitialized data sections (e.g. .data, .noinit)
                                               zeroinit                                              // Catch-all for zero-initialized data sections (e.g. .bss)
                                             };
-place in RAM                                { block heap };                                         // Heap reserved block
-place at end of RAM                         { block stack };                                        // Stack reserved block at the end
+place in RAM_DATA                           { block heap };                                         // Heap reserved block
+place at end of RAM_DATA                    { block stack };                                        // Stack reserved block at the end
+
+
+define block code_tx { section .text.tx_*, section .text._tx_*, section .text._txe_*, section .text._txr_* };
+define block code_fx { section .text.fx_*, section .text._fx_*, section .text._fxe_*, section .text._fxr_* };
+define block code_isr { section .init.*_IRQHandler, section .text.*_IRQHandler, section .text.*Callback };
+define block code_libc { section .text.libc.* };
+
+initialize by copy with packing=auto   { section .RAM1.DATA^.*
+                                                    , section .RAM2.DATA^.*
+                                                    , section .RAM3.DATA^.*
+                                                    , section .RAM4.DATA^.*
+                                                    , section .Backup_RAM1.DATA^.*
+                                                    , section .AXI_RAM1.DATA^.*
+                                                    };
+initialize by copy with packing=auto        { block code_tx
+                                            , block code_isr
+                                            , block code_fx
+                                            , block code_libc 
+                                            };   
+
+
+place at start of RAM_CODE                        { block vectors_ram };
+place in RAM_CODE with auto order                 { section .fast
+                                                  , section .fast.*
+                                                  , block code_libc
+                                                  , block code_isr
+                                                  , block code_tx
+                                                  , block code_fx
+                                                  };   // "ramfunc" section
