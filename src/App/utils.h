@@ -8,9 +8,13 @@ extern "C"
 
 #include "stdio.h"
 
+#ifdef DEBUG
 #define LOG(fmt, ...)           \
     printf(fmt, ##__VA_ARGS__); \
     printf("\n");
+#else
+#define LOG(fmt, ...) 
+#endif
 
 #ifdef __cplusplus
 }
