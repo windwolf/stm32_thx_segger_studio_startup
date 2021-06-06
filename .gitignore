@@ -63,6 +63,9 @@ dkms.conf
 # logic
 *.sal
 
+# vscode
+.vscode/
+
 # 编译输出
 src/Output/*
 
