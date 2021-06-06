@@ -28,6 +28,7 @@
       debug_register_definition_file="$(ProjectDir)/STM32H750x_Registers.xml"
       debug_stack_pointer_start="__stack_end__"
       debug_target_connection="J-Link"
+      default_isr_section=".fast.text"
       gcc_c_language_standard="gnu17"
       gcc_cplusplus_language_standard="gnu++17"
       gcc_entry_point="Reset_Handler"
