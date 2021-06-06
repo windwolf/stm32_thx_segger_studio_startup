@@ -58,6 +58,7 @@ dkms.conf
 *.jdebug
 *.jdebug.user
 *.jlink
+*.emSession
 
 # logic
 *.sal
