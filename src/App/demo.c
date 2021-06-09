@@ -187,11 +187,17 @@ void thread_1_entry(ULONG thread_input)
 
     //UINT status;
     w25qxx_spi_reset(&w25qxx_1);
-    w25qxx_spi_read_id(&w25qxx_1, &w25qxx_1_id);
+    w25qxx_spi_id_read(&w25qxx_1, &w25qxx_1_id);
     LOG("W25QXX: id=%d", w25qxx_1_id);
-    w25qxx_spi_write(&w25qxx_1, &w25qxx_1_id, 0x0400, 4);
-    w25qxx_spi_read(&w25qxx_1, w25qxx_data_buf, 0x0400, 4);
-    LOG("W25QXX: r=%d", *((uint32_t*)w25qxx_data_buf));
+    w25qxx_spi_status_get(&w25qxx_1);
+    LOG("W25QXX: s1=%d, s2=%d, s3=%d", w25qxx_1.base.status1, w25qxx_1.base.status2, w25qxx_1.base.status3);
+    
+    w25qxx_1_id++;
+    LOG("W25QXX: w=%d", w25qxx_1_id);
+    w25qxx_spi_block_erase(&w25qxx_1, 0x0000);
+    w25qxx_spi_write(&w25qxx_1, (uint8_t *)&w25qxx_1_id, 0x0000, 4);
+    w25qxx_spi_read(&w25qxx_1, w25qxx_data_buf, 0x0000, 256);
+    LOG("W25QXX: r=%d", *((uint32_t *)w25qxx_data_buf));
     /* This thread simply sends messages to a queue shared by thread 2.  */
     while (1)
     {
@@ -204,7 +210,7 @@ void thread_1_entry(ULONG thread_input)
             Stream_Tx(&stream, txBuf0, len);
             w25qxx_spi_write(&w25qxx_1, txBuf0, 0x0400, len);
             w25qxx_spi_read(&w25qxx_1, w25qxx_data_buf, 0x0400, len);
-            LOG("W25QXX: ri=%s", *((uint32_t*)w25qxx_data_buf));
+            LOG("W25QXX: ri=%s", *((uint32_t *)w25qxx_data_buf));
             tx_thread_sleep(10);
             //cRead++;
         }
