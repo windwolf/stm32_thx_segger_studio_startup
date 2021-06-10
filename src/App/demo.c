@@ -1,6 +1,6 @@
 
 #include "demo.h"
-#include "basic/ring_buffer8.h"
+#include "basic/ringbuffer.h"
 #include "mem_layout.h"
 #include "basic/stream.h"
 #include "basic/five_step_command_client.h"
@@ -23,7 +23,7 @@ PinDevice csPin;
 PinDevice dcPin;
 D2_BUFFER SpiDevice spi4Dev;
 D2_BUFFER SpiWithPinsDevice spi4pDev;
-D2_BUFFER FiveStepCommandCient st7735_cmd;
+D2_BUFFER FiveStepCommandClientSpi st7735_cmd;
 #define ST7735_BUFFER_SIZE 48114
 D2_BUFFER uint8_t st7735Buffer[ST7735_BUFFER_SIZE];
 D2_BUFFER ST77XX st7735;
@@ -37,7 +37,7 @@ extern SPI_HandleTypeDef hspi1;
 D2_BUFFER PinDevice csPin_1;
 D2_BUFFER SpiDevice spi1Dev;
 D2_BUFFER SpiWithPinsDevice spi1pDev;
-D2_BUFFER FiveStepCommandCient w25qxx_cmd;
+D2_BUFFER FiveStepCommandClientSpi w25qxx_cmd;
 D2_BUFFER uint8_t w25qxx_1_buf1[W25QXX_BUFFER_SIZE];
 D2_BUFFER W25QXX_SPI w25qxx_1;
 
@@ -62,16 +62,16 @@ void init_driver()
     stream_server_start(&stream);
 
     pin_device_create(&dcPin, GPIOE, GPIO_PIN_13, PIN_DEVICE_STATUS_INVERSE_NORMAL);
-    spi_device_create(&spi4Dev, &hspi4, 4);
+    spi_device_create(&spi4Dev, &hspi4, 0);
     spi_with_pins_device_create(&spi4pDev, &spi4Dev, NULL, NULL, &dcPin);
-    five_step_command_client_create(&st7735_cmd, &spi4pDev);
+    five_step_command_client_spi_create(&st7735_cmd, &spi4pDev);
     Buffer buf1 = {.data = st7735Buffer, .size = ST7735_BUFFER_SIZE};
     st7735_create(&st7735, &st7735_cmd, buf1);
 
-    pin_device_create(&csPin_1, GPIOD, GPIO_PIN_6, PIN_DEVICE_STATUS_INVERSE_NORMAL);
-    spi_device_create(&spi1Dev, &hspi1, 4);
+    pin_device_create(&csPin_1, GPIOD, GPIO_PIN_6, PIN_DEVICE_STATUS_INVERSE_INVERSE);
+    spi_device_create(&spi1Dev, &hspi1, 0);
     spi_with_pins_device_create(&spi1pDev, &spi1Dev, &csPin_1, NULL, NULL);
-    five_step_command_client_create(&w25qxx_cmd, &spi1pDev);
+    five_step_command_client_spi_create(&w25qxx_cmd, &spi1pDev);
     Buffer buf2 = {.data = w25qxx_1_buf1, .size = W25QXX_BUFFER_SIZE};
     w25qxx_spi_create(&w25qxx_1, buf2, &w25qxx_cmd);
 }
