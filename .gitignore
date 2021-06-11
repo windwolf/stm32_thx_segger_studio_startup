@@ -67,7 +67,7 @@ dkms.conf
 .vscode/
 
 # 编译输出
-src/Output/*
+src/Output
 
 src/cubemx/*
 !src/cubemx/*.ioc
