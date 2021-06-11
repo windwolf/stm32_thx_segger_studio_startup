@@ -32,16 +32,9 @@ extern "C"
 
     void thread_1_entry(ULONG thread_input);
 
+    void fx_application_define(void *first_unused_memory);
+
     void thread_2_entry(ULONG thread_input);
-
-    void thread_3_and_4_entry(ULONG thread_input);
-
-    void thread_5_entry(ULONG thread_input);
-
-    void thread_6_and_7_entry(ULONG thread_input);
-
-    void tx_application_define(void *first_unused_memory);
-
 #ifdef __cplusplus
 }
 #endif
