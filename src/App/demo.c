@@ -9,6 +9,7 @@
 #include "../Drivers/device/inc/st77xx/st7735.h"
 #include "../Drivers/device/inc/w25qxx/w25qxx_spi.h"
 #include "tracex.h"
+#include "stdint.h"
 
 extern UART_HandleTypeDef huart4;
 D2_BUFFER UartDevice uartDevice;
@@ -186,16 +187,16 @@ void thread_1_entry(ULONG thread_input)
     //UINT status;
     w25qxx_spi_reset(&w25qxx_1);
     w25qxx_spi_id_read(&w25qxx_1, &w25qxx_1_id);
-    LOG("W25QXX: id=0x%lx", w25qxx_1_id);
+    LOG("W25QXX: id=%.8X id=%#X id=%#0Xl id=%#0lX id=%0#X", w25qxx_1_id, w25qxx_1_id, w25qxx_1_id, w25qxx_1_id, w25qxx_1_id);
     w25qxx_spi_status_get(&w25qxx_1);
     LOG("W25QXX: s1=%d, s2=%d, s3=%d", w25qxx_1.base.status1, w25qxx_1.base.status2, w25qxx_1.base.status3);
 
     w25qxx_1_id++;
-    LOG("W25QXX: w=%#010x", w25qxx_1_id);
-    w25qxx_spi_read(&w25qxx_1, &w25qxx_1_id, 0x0000, 4);
+    LOG("W25QXX: w=%x", w25qxx_1_id);
+    //w25qxx_spi_read(&w25qxx_1, &w25qxx_1_id, 0x0000, 4);
     w25qxx_spi_write(&w25qxx_1, (uint8_t *)&w25qxx_1_id, 0x0000, 4);
     w25qxx_spi_read(&w25qxx_1, w25qxx_data_buf, 0x0000, 256);
-    LOG("W25QXX: r=%#010x", *((uint32_t *)w25qxx_data_buf));
+    LOG("W25QXX: r=%x", *((uint32_t *)w25qxx_data_buf));
 
     HAL_SD_GetCardCID(&hsd1, &CID);
     HAL_SD_GetCardCSD(&hsd1, &CSD);
@@ -210,8 +211,8 @@ void thread_1_entry(ULONG thread_input)
 
             ringbuffer_read(&uartRxRingBuffer, txBuf0, len);
             stream_send(&stream, txBuf0, len);
-            w25qxx_spi_write(&w25qxx_1, txBuf0, 0x0400, len);
-            w25qxx_spi_read(&w25qxx_1, w25qxx_data_buf, 0x0400, len);
+            //w25qxx_spi_write(&w25qxx_1, txBuf0, 0x0400, len);
+            //w25qxx_spi_read(&w25qxx_1, w25qxx_data_buf, 0x0400, len);
             LOG("W25QXX: ri=%d", *((uint32_t *)w25qxx_data_buf));
             tx_thread_sleep(10);
             //cRead++;
