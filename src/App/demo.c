@@ -1,14 +1,13 @@
 
 #include "demo.h"
-#include "common/ringbuffer.h"
 #include "mem_layout.h"
-#include "common/stream.h"
-#include "common/five_step_command_client.h"
-#include "common/device.h"
+#include "../Drivers/common/inc/common/stream.h"
+#include "../Drivers/common/inc/common/five_step_command_client.h"
+#include "../Drivers/common/inc/common/device.h"
 #include "bsp.h"
 #include "stm32h7xx_ll_spi.h"
-#include "st77xx/st7735.h"
-#include "w25qxx/w25qxx_spi.h"
+#include "../Drivers/device/inc/st77xx/st7735.h"
+#include "../Drivers/device/inc/w25qxx/w25qxx_spi.h"
 #include "tracex.h"
 
 extern UART_HandleTypeDef huart4;
@@ -30,7 +29,7 @@ D2_BUFFER ST77XX st7735;
 
 extern QSPI_HandleTypeDef hqspi;
 
-#define W25QXX_BUFFER_SIZE 2048
+#define W25QXX_BUFFER_SIZE W25QXX_BLOCK_SIZE
 D2_DATA uint32_t w25qxx_1_id;
 D1_BUFFER uint8_t w25qxx_data_buf[500];
 extern SPI_HandleTypeDef hspi1;
@@ -40,6 +39,8 @@ D2_BUFFER SpiWithPinsDevice spi1pDev;
 D2_BUFFER FiveStepCommandClientSpi w25qxx_cmd;
 D2_BUFFER uint8_t w25qxx_1_buf1[W25QXX_BUFFER_SIZE];
 D2_BUFFER W25QXX_SPI w25qxx_1;
+
+extern SD_HandleTypeDef hsd1;
 
 int32_t cWrite = 0;
 int32_t cRead = 0;
@@ -175,23 +176,31 @@ void thread_0_entry(ULONG thread_input)
     }
 }
 
+HAL_SD_CardInfoTypeDef CardInfo;
+HAL_SD_CardCIDTypeDef CID;
+HAL_SD_CardCSDTypeDef CSD;
+HAL_SD_CardStateTypeDef CSTA;
 void thread_1_entry(ULONG thread_input)
 {
 
     //UINT status;
     w25qxx_spi_reset(&w25qxx_1);
     w25qxx_spi_id_read(&w25qxx_1, &w25qxx_1_id);
-    LOG("W25QXX: id=%d", w25qxx_1_id);
+    LOG("W25QXX: id=0x%lx", w25qxx_1_id);
     w25qxx_spi_status_get(&w25qxx_1);
     LOG("W25QXX: s1=%d, s2=%d, s3=%d", w25qxx_1.base.status1, w25qxx_1.base.status2, w25qxx_1.base.status3);
 
     w25qxx_1_id++;
-    LOG("W25QXX: w=%d", w25qxx_1_id);
-    w25qxx_spi_block_erase(&w25qxx_1, 0x0000);
+    LOG("W25QXX: w=%#010x", w25qxx_1_id);
+    w25qxx_spi_read(&w25qxx_1, &w25qxx_1_id, 0x0000, 4);
     w25qxx_spi_write(&w25qxx_1, (uint8_t *)&w25qxx_1_id, 0x0000, 4);
     w25qxx_spi_read(&w25qxx_1, w25qxx_data_buf, 0x0000, 256);
-    LOG("W25QXX: r=%d", *((uint32_t *)w25qxx_data_buf));
-    /* This thread simply sends messages to a queue shared by thread 2.  */
+    LOG("W25QXX: r=%#010x", *((uint32_t *)w25qxx_data_buf));
+
+    HAL_SD_GetCardCID(&hsd1, &CID);
+    HAL_SD_GetCardCSD(&hsd1, &CSD);
+    HAL_SD_GetCardInfo(&hsd1, &CardInfo);
+    HAL_SD_GetCardStatus(&hsd1, &CSTA);
     while (1)
     {
         stream_receive_ready_wait(&stream, TX_WAIT_FOREVER);
