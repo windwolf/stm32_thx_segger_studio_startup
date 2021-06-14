@@ -2,12 +2,12 @@
 #include "demo.h"
 #include "mem_layout.h"
 #include "../Drivers/common/inc/common/stream.h"
-#include "../Drivers/common/inc/common/five_step_command_client.h"
+#include "../Drivers/common/inc/common/fscc.h"
 #include "../Drivers/common/inc/common/device.h"
 #include "bsp.h"
 #include "stm32h7xx_ll_spi.h"
 #include "../Drivers/device/inc/st77xx/st7735.h"
-#include "../Drivers/device/inc/w25qxx/w25qxx_spi.h"
+#include "../Drivers/device/inc/w25qxx/w25qxx.h"
 #include "tracex.h"
 #include "stdint.h"
 
@@ -28,18 +28,23 @@ D2_BUFFER FiveStepCommandClientSpi st7735_cmd;
 D2_BUFFER uint8_t st7735Buffer[ST7735_BUFFER_SIZE];
 D2_BUFFER ST77XX st7735;
 
-extern QSPI_HandleTypeDef hqspi;
+D1_BUFFER uint8_t data_buf[500];
 
 #define W25QXX_BUFFER_SIZE W25QXX_BLOCK_SIZE
 D2_DATA uint32_t w25qxx_1_id;
-D1_BUFFER uint8_t w25qxx_data_buf[500];
 extern SPI_HandleTypeDef hspi1;
 D2_BUFFER PinDevice csPin_1;
 D2_BUFFER SpiDevice spi1Dev;
 D2_BUFFER SpiWithPinsDevice spi1pDev;
-D2_BUFFER FiveStepCommandClientSpi w25qxx_cmd;
-D2_BUFFER uint8_t w25qxx_1_buf1[W25QXX_BUFFER_SIZE];
-D2_BUFFER W25QXX_SPI w25qxx_1;
+D2_BUFFER FiveStepCommandClientSpi w25qxx_1_cmd;
+D2_BUFFER uint8_t w25qxx_1_buf[W25QXX_BUFFER_SIZE];
+D2_BUFFER W25QXX w25qxx_1;
+
+extern QSPI_HandleTypeDef hqspi;
+D2_DATA uint32_t w25qxx_2_id;
+D2_BUFFER FiveStepCommandClientQspi w25qxx_2_cmd;
+D2_BUFFER uint8_t w25qxx_2_buf[W25QXX_BUFFER_SIZE];
+D2_BUFFER W25QXX w25qxx_2;
 
 extern SD_HandleTypeDef hsd1;
 
@@ -68,14 +73,19 @@ void init_driver()
     spi_with_pins_device_create(&spi4pDev, &spi4Dev, NULL, NULL, &dcPin);
     five_step_command_client_spi_create(&st7735_cmd, &spi4pDev);
     Buffer buf1 = {.data = st7735Buffer, .size = ST7735_BUFFER_SIZE};
-    st7735_create(&st7735, &st7735_cmd, buf1);
+    st7735_create(&st7735, (FiveStepCommandClient *)&st7735_cmd, buf1);
 
     pin_device_create(&csPin_1, GPIOD, GPIO_PIN_6, PIN_DEVICE_STATUS_INVERSE_INVERSE);
     spi_device_create(&spi1Dev, &hspi1, 4);
     spi_with_pins_device_create(&spi1pDev, &spi1Dev, &csPin_1, NULL, NULL);
-    five_step_command_client_spi_create(&w25qxx_cmd, &spi1pDev);
-    Buffer buf2 = {.data = w25qxx_1_buf1, .size = W25QXX_BUFFER_SIZE};
-    w25qxx_spi_create(&w25qxx_1, buf2, &w25qxx_cmd);
+    five_step_command_client_spi_create(&w25qxx_1_cmd, &spi1pDev);
+    Buffer buf2 = {.data = w25qxx_1_buf, .size = W25QXX_BUFFER_SIZE};
+    w25qxx_create(&w25qxx_1, buf2, (FiveStepCommandClient *)&w25qxx_1_cmd, 0);
+
+    five_step_command_client_qspi_create(&w25qxx_2_cmd, &hqspi, 4);
+    Buffer buf3 = {.data = w25qxx_2_buf, .size = W25QXX_BUFFER_SIZE};
+    w25qxx_create(&w25qxx_2, buf3, (FiveStepCommandClient *)&w25qxx_2_cmd, 0);
+    w25qxx_2.dummyCycles = 4;
 }
 
 void tx_application_define(void *first_unused_memory)
@@ -180,23 +190,34 @@ void thread_0_entry(ULONG thread_input)
 HAL_SD_CardInfoTypeDef CardInfo;
 HAL_SD_CardCIDTypeDef CID;
 HAL_SD_CardCSDTypeDef CSD;
-HAL_SD_CardStateTypeDef CSTA;
+HAL_SD_CardStatusTypeDef CSTA;
 void thread_1_entry(ULONG thread_input)
 {
-
-    //UINT status;
-    w25qxx_spi_reset(&w25qxx_1);
-    w25qxx_spi_id_read(&w25qxx_1, &w25qxx_1_id);
-    LOG("W25QXX: id=%.8X id=%#X id=%#0Xl id=%#0lX id=%0#X", w25qxx_1_id, w25qxx_1_id, w25qxx_1_id, w25qxx_1_id, w25qxx_1_id);
-    w25qxx_spi_status_get(&w25qxx_1);
-    LOG("W25QXX: s1=%d, s2=%d, s3=%d", w25qxx_1.base.status1, w25qxx_1.base.status2, w25qxx_1.base.status3);
+    w25qxx_reset(&w25qxx_1);
+    w25qxx_id_read(&w25qxx_1);
+    LOG("W25QXX-1: mdId=%#X jedecId=%#X", w25qxx_1.mdId, w25qxx_1.jedecId);
+    w25qxx_status_get(&w25qxx_1);
+    LOG("W25QXX-1: s1=%d, s2=%d, s3=%d", w25qxx_1.status1, w25qxx_1.status2, w25qxx_1.status3);
 
     w25qxx_1_id++;
-    LOG("W25QXX: w=%x", w25qxx_1_id);
-    //w25qxx_spi_read(&w25qxx_1, &w25qxx_1_id, 0x0000, 4);
-    w25qxx_spi_write(&w25qxx_1, (uint8_t *)&w25qxx_1_id, 0x0000, 4);
-    w25qxx_spi_read(&w25qxx_1, w25qxx_data_buf, 0x0000, 256);
-    LOG("W25QXX: r=%x", *((uint32_t *)w25qxx_data_buf));
+    LOG("W25QXX-1: w=%#X", w25qxx_1_id);
+    //w25qxx_read(&w25qxx_1, &w25qxx_1_id, 0x0000, 4);
+    w25qxx_write(&w25qxx_1, (uint8_t *)&w25qxx_1_id, 0x0000, 4);
+    w25qxx_read(&w25qxx_1, data_buf, 0x0000, 256);
+    LOG("W25QXX-1: r=%#X", *((uint32_t *)data_buf));
+
+    w25qxx_reset(&w25qxx_2);
+    w25qxx_id_read(&w25qxx_2);
+    LOG("W25QXX-2: mdId=%#X jedecId=%#X", w25qxx_2.mdId, w25qxx_2.jedecId);
+    w25qxx_status_get(&w25qxx_2);
+    LOG("W25QXX-2: s1=%d, s2=%d, s3=%d", w25qxx_2.status1, w25qxx_2.status2, w25qxx_2.status3);
+
+    w25qxx_2_id++;
+    LOG("W25QXX-2: w=%#X", w25qxx_2_id);
+    //w25qxx_read(&w25qxx_1, &w25qxx_1_id, 0x0000, 4);
+    w25qxx_write(&w25qxx_2, (uint8_t *)&w25qxx_2_id, 0x0000, 4);
+    w25qxx_read(&w25qxx_2, data_buf, 0x0000, 256);
+    LOG("W25QXX-2: r=%#X", *((uint32_t *)data_buf));
 
     HAL_SD_GetCardCID(&hsd1, &CID);
     HAL_SD_GetCardCSD(&hsd1, &CSD);
@@ -211,9 +232,9 @@ void thread_1_entry(ULONG thread_input)
 
             ringbuffer_read(&uartRxRingBuffer, txBuf0, len);
             stream_send(&stream, txBuf0, len);
-            //w25qxx_spi_write(&w25qxx_1, txBuf0, 0x0400, len);
-            //w25qxx_spi_read(&w25qxx_1, w25qxx_data_buf, 0x0400, len);
-            LOG("W25QXX: ri=%d", *((uint32_t *)w25qxx_data_buf));
+            //w25qxx_write(&w25qxx_1, txBuf0, 0x0400, len);
+            //w25qxx_read(&w25qxx_1, data_buf, 0x0400, len);
+            LOG("W25QXX: ri=%d", *((uint32_t *)data_buf));
             tx_thread_sleep(10);
             //cRead++;
         }
