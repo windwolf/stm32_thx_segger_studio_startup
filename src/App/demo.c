@@ -12,6 +12,9 @@
 #include "tracex.h"
 #include "stdint.h"
 
+#define LOG_MODULE "demo"
+#include "log.h"
+
 extern UART_HandleTypeDef huart4;
 D2_BUFFER UartDevice uartDevice;
 D2_BUFFER uint8_t txBuf0[64];
@@ -201,27 +204,27 @@ void thread_1_entry(ULONG thread_input)
 {
     w25qxx_reset(&w25qxx_1);
     w25qxx_id_read(&w25qxx_1);
-    LOG("W25QXX-1: mdId=%#X jedecId=%#X", w25qxx_1.mdId, w25qxx_1.jedecId);
+    LOG_D("W25QXX-1: mdId=%#x jedecId=%#x", w25qxx_1.mdId, w25qxx_1.jedecId);
     w25qxx_status_get(&w25qxx_1);
-    LOG("W25QXX-1: s1=%d, s2=%d, s3=%d", w25qxx_1.status1, w25qxx_1.status2, w25qxx_1.status3);
+    LOG_D("W25QXX-1: s1=%d, s2=%d, s3=%d", w25qxx_1.status1, w25qxx_1.status2, w25qxx_1.status3);
 
     w25qxx_1_id++;
-    LOG("W25QXX-1: w=%#X", w25qxx_1_id);
+    LOG_D("W25QXX-1: w=%#x", w25qxx_1_id);
     block_write(&block1, (uint8_t *)&w25qxx_1_id, 0x0000, 4);
     block_read(&block1, data_buf, 0x0000, 256);
-    LOG("W25QXX-1: r=%#X", *((uint32_t *)data_buf));
+    LOG_D("W25QXX-1: r=%#x", *((uint32_t *)data_buf));
 
     w25qxx_reset(&w25qxx_2);
     w25qxx_id_read(&w25qxx_2);
-    LOG("W25QXX-2: mdId=%#X jedecId=%#X", w25qxx_2.mdId, w25qxx_2.jedecId);
+    LOG_D("W25QXX-2: mdId=%#x jedecId=%#x", w25qxx_2.mdId, w25qxx_2.jedecId);
     w25qxx_status_get(&w25qxx_2);
-    LOG("W25QXX-2: s1=%d, s2=%d, s3=%d", w25qxx_2.status1, w25qxx_2.status2, w25qxx_2.status3);
+    LOG_D("W25QXX-2: s1=%d, s2=%d, s3=%d", w25qxx_2.status1, w25qxx_2.status2, w25qxx_2.status3);
 
     w25qxx_2_id++;
-    LOG("W25QXX-2: w=%#X", w25qxx_2_id);
+    LOG_D("W25QXX-2: w=%#x", w25qxx_2_id);
     block_write(&block2, (uint8_t *)&w25qxx_2_id, 0x0000, 4);
     block_read(&block2, data_buf, 0x0000, 256);
-    LOG("W25QXX-2: r=%#X", *((uint32_t *)data_buf));
+    LOG_D("W25QXX-2: r=%#x", *((uint32_t *)data_buf));
 
     HAL_SD_GetCardCID(&hsd1, &CID);
     HAL_SD_GetCardCSD(&hsd1, &CSD);
@@ -238,7 +241,7 @@ void thread_1_entry(ULONG thread_input)
             stream_send(&stream, txBuf0, len);
             //w25qxx_write(&w25qxx_1, txBuf0, 0x0400, len);
             //w25qxx_read(&w25qxx_1, data_buf, 0x0400, len);
-            LOG("W25QXX: ri=%d", *((uint32_t *)data_buf));
+            LOG_D("W25QXX: ri=%d", *((uint32_t *)data_buf));
             tx_thread_sleep(10);
             //cRead++;
         }
