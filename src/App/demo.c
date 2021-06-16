@@ -4,6 +4,7 @@
 #include "../Drivers/common/inc/common/stream.h"
 #include "../Drivers/common/inc/common/fscc.h"
 #include "../Drivers/common/inc/common/device.h"
+#include "../Drivers/common/inc/common/block.h"
 #include "bsp.h"
 #include "stm32h7xx_ll_spi.h"
 #include "../Drivers/device/inc/st77xx/st7735.h"
@@ -31,20 +32,23 @@ D2_BUFFER ST77XX st7735;
 D1_BUFFER uint8_t data_buf[500];
 
 #define W25QXX_BUFFER_SIZE W25QXX_BLOCK_SIZE
-D2_DATA uint32_t w25qxx_1_id;
+
 extern SPI_HandleTypeDef hspi1;
+D2_DATA uint32_t w25qxx_1_id;
 D2_BUFFER PinDevice csPin_1;
 D2_BUFFER SpiDevice spi1Dev;
 D2_BUFFER SpiWithPinsDevice spi1pDev;
 D2_BUFFER FiveStepCommandClientSpi w25qxx_1_cmd;
 D2_BUFFER uint8_t w25qxx_1_buf[W25QXX_BUFFER_SIZE];
 D2_BUFFER W25QXX w25qxx_1;
+D2_BUFFER Block block1;
 
 extern QSPI_HandleTypeDef hqspi;
 D2_DATA uint32_t w25qxx_2_id;
 D2_BUFFER FiveStepCommandClientQspi w25qxx_2_cmd;
 D2_BUFFER uint8_t w25qxx_2_buf[W25QXX_BUFFER_SIZE];
 D2_BUFFER W25QXX w25qxx_2;
+D2_BUFFER Block block2;
 
 extern SD_HandleTypeDef hsd1;
 
@@ -80,11 +84,13 @@ void init_driver()
     spi_with_pins_device_create(&spi1pDev, &spi1Dev, &csPin_1, NULL, NULL);
     five_step_command_client_spi_create(&w25qxx_1_cmd, &spi1pDev);
     Buffer buf2 = {.data = w25qxx_1_buf, .size = W25QXX_BUFFER_SIZE};
-    w25qxx_create(&w25qxx_1, buf2, (FiveStepCommandClient *)&w25qxx_1_cmd, 0);
+    w25qxx_create(&w25qxx_1, (FiveStepCommandClient *)&w25qxx_1_cmd, 0);
+    w25qxx_block_create(&w25qxx_1, &block1, buf2);
 
     five_step_command_client_qspi_create(&w25qxx_2_cmd, &hqspi, 4);
     Buffer buf3 = {.data = w25qxx_2_buf, .size = W25QXX_BUFFER_SIZE};
-    w25qxx_create(&w25qxx_2, buf3, (FiveStepCommandClient *)&w25qxx_2_cmd, 0);
+    w25qxx_create(&w25qxx_2, (FiveStepCommandClient *)&w25qxx_2_cmd, 0);
+    w25qxx_block_create(&w25qxx_2, &block2, buf3);
     w25qxx_2.dummyCycles = 4;
 }
 
@@ -201,9 +207,8 @@ void thread_1_entry(ULONG thread_input)
 
     w25qxx_1_id++;
     LOG("W25QXX-1: w=%#X", w25qxx_1_id);
-    //w25qxx_read(&w25qxx_1, &w25qxx_1_id, 0x0000, 4);
-    w25qxx_write(&w25qxx_1, (uint8_t *)&w25qxx_1_id, 0x0000, 4);
-    w25qxx_read(&w25qxx_1, data_buf, 0x0000, 256);
+    block_write(&block1, (uint8_t *)&w25qxx_1_id, 0x0000, 4);
+    block_read(&block1, data_buf, 0x0000, 256);
     LOG("W25QXX-1: r=%#X", *((uint32_t *)data_buf));
 
     w25qxx_reset(&w25qxx_2);
@@ -214,9 +219,8 @@ void thread_1_entry(ULONG thread_input)
 
     w25qxx_2_id++;
     LOG("W25QXX-2: w=%#X", w25qxx_2_id);
-    //w25qxx_read(&w25qxx_1, &w25qxx_1_id, 0x0000, 4);
-    w25qxx_write(&w25qxx_2, (uint8_t *)&w25qxx_2_id, 0x0000, 4);
-    w25qxx_read(&w25qxx_2, data_buf, 0x0000, 256);
+    block_write(&block2, (uint8_t *)&w25qxx_2_id, 0x0000, 4);
+    block_read(&block2, data_buf, 0x0000, 256);
     LOG("W25QXX-2: r=%#X", *((uint32_t *)data_buf));
 
     HAL_SD_GetCardCID(&hsd1, &CID);
