@@ -142,6 +142,7 @@
 ;*  Notes
 ;*    (1) Ensure that HardFault_Handler is part of the exception table
 ;*/
+#ifdef SEGGER_FAULT_HANDLER
 #ifdef __GNUC__
 HardFault_Handler:
 #else
@@ -188,5 +189,5 @@ Pass_StackPtr
 #else
         END
 #endif
-
+#endif
 ;/****** End Of File *************************************************/
