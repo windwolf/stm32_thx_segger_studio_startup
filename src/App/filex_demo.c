@@ -1,6 +1,7 @@
 /* This is a small demo of the high-performance FileX FAT file system. It includes setup for
    a small 34KB RAM disk and a loop that writes and reads a small file.  */
-#include "fx_api.h"
+#include "filex_demo.h"
+
 #ifdef FX_ENABLE_FAULT_TOLERANT
 #include "fx_fault_tolerant.h"
 #endif /* FX_ENABLE_FAULT_TOLERANT */
@@ -22,45 +23,22 @@ VOID _fx_ram_driver(FX_MEDIA *media_ptr);
 
 /* Define thread prototypes.  */
 
-void thread_0_entry(ULONG thread_input);
-
 /* Define FileX global data structures.  */
 
-FX_MEDIA ram_disk;
+FX_MEDIA sd_disk;
 FX_FILE my_file;
-
-#ifndef FX_STANDALONE_ENABLE
-CHAR *ram_disk_memory;
-#else
-unsigned char ram_disk_memory[256 * 512];
-#endif
 
 /* Define ThreadX global data structures.  */
 
 #ifndef FX_STANDALONE_ENABLE
-TX_THREAD thread_0;
+TX_THREAD thread_2;
 #endif
-ULONG thread_0_counter;
-
-void main(void)
-{
-
-#ifdef FX_STANDALONE_ENABLE
-
-    /* Initialize FileX.  */
-    fx_system_initialize();
-
-    thread_0_entry(0);
-#else
-    /* Enter the ThreadX kernel.  */
-    tx_kernel_enter();
-#endif
-}
+ULONG thread_2_counter;
 
 /* Define what the initial system looks like.  */
 
 #ifndef FX_STANDALONE_ENABLE
-void fx_application_define(void *first_unused_memory)
+CHAR *fx_application_define(void *first_unused_memory)
 {
 
     CHAR *pointer;
@@ -72,19 +50,20 @@ void fx_application_define(void *first_unused_memory)
        create information.  */
 
     /* Create the main thread.  */
-    tx_thread_create(&thread_0, "thread 2", thread_2_entry, 0,
+    tx_thread_create(&thread_2, "thread 2", thread_2_entry, 0,
                      pointer, DEMO_STACK_SIZE,
                      1, 1, TX_NO_TIME_SLICE, TX_AUTO_START);
     pointer = pointer + DEMO_STACK_SIZE;
 
-    /* Save the memory pointer for the RAM disk.  */
-    ram_disk_memory = pointer;
-
     /* Initialize FileX.  */
     fx_system_initialize();
+
+    return pointer;
 }
 
 #endif
+
+extern SdDevice sdDevice;
 
 void thread_2_entry(ULONG thread_input)
 {
@@ -92,7 +71,7 @@ void thread_2_entry(ULONG thread_input)
     UINT status;
     ULONG actual;
     CHAR local_buffer[30];
-
+    fx_sd_driver_device_set(&sdDevice);
     /* Format the RAM disk - the memory for the RAM disk was setup in
        tx_application_define above.  */
 #ifdef FX_ENABLE_EXFAT
@@ -110,14 +89,14 @@ void thread_2_entry(ULONG thread_input)
                           12345,                // Volume ID
                           1);                   // Boundary unit
 #else
-    fx_media_format(&ram_disk,
-                    _fx_ram_driver,       // Driver entry
-                    ram_disk_memory,      // RAM disk memory pointer
+    fx_media_format(&sd_disk,
+                    fx_sd_driver,         // Driver entry
+                    &sdDevice,            // RAM disk memory pointer
                     media_memory,         // Media buffer pointer
                     sizeof(media_memory), // Media buffer size
-                    "MY_RAM_DISK",        // Volume Name
+                    "SD1",                // Volume Name
                     1,                    // Number of FATs
-                    32,                   // Directory Entries
+                    256,                  // Directory Entries
                     0,                    // Hidden sectors
                     256,                  // Total sectors
                     512,                  // Sector size
@@ -131,7 +110,7 @@ void thread_2_entry(ULONG thread_input)
     {
 
         /* Open the RAM disk.  */
-        status = fx_media_open(&ram_disk, "RAM DISK", _fx_ram_driver, ram_disk_memory, media_memory, sizeof(media_memory));
+        status = fx_media_open(&sd_disk, "RAM DISK", fx_sd_driver, &sdDevice, media_memory, sizeof(media_memory));
 
         /* Check the media open status.  */
         if (status != FX_SUCCESS)
@@ -153,7 +132,7 @@ void thread_2_entry(ULONG thread_input)
 #endif /* FX_ENABLE_FAULT_TOLERANT */
 
         /* Create a file called TEST.TXT in the root directory.  */
-        status = fx_file_create(&ram_disk, "TEST.TXT");
+        status = fx_file_create(&sd_disk, "TEST.TXT");
 
         /* Check the create status.  */
         if (status != FX_SUCCESS)
@@ -170,7 +149,7 @@ void thread_2_entry(ULONG thread_input)
         }
 
         /* Open the test file.  */
-        status = fx_file_open(&ram_disk, &my_file, "TEST.TXT", FX_OPEN_FOR_WRITE);
+        status = fx_file_open(&sd_disk, &my_file, "TEST.TXT", FX_OPEN_FOR_WRITE);
 
         /* Check the file open status.  */
         if (status != FX_SUCCESS)
@@ -236,7 +215,7 @@ void thread_2_entry(ULONG thread_input)
         }
 
         /* Close the media.  */
-        status = fx_media_close(&ram_disk);
+        status = fx_media_close(&sd_disk);
 
         /* Check the media close status.  */
         if (status != FX_SUCCESS)
@@ -248,7 +227,7 @@ void thread_2_entry(ULONG thread_input)
 
         /* Increment the thread counter, which represents the number
            of successful passes through this loop.  */
-        thread_0_counter++;
+        thread_2_counter++;
 
     } while (1);
 
