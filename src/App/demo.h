@@ -21,8 +21,8 @@ extern "C"
 #include "stm32h7xx_ll_spi.h"
 #include "stm32h7xx_hal_qspi.h"
 
-#define DEMO_STACK_SIZE 2000
-#define DEMO_BYTE_POOL_SIZE 10000
+#define DEMO_STACK_SIZE 5000
+#define DEMO_BYTE_POOL_SIZE 20000
 #define DEMO_BLOCK_POOL_SIZE 100
 #define DEMO_QUEUE_SIZE 100
 

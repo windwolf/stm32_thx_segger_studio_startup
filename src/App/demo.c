@@ -54,6 +54,9 @@ D2_BUFFER W25QXX w25qxx_2;
 D2_BUFFER Block block2;
 
 extern SD_HandleTypeDef hsd1;
+SdDevice sdDevice;
+Block sd_block;
+D2_BUFFER uint8_t sd_buffer[512];
 
 int32_t cWrite = 0;
 int32_t cRead = 0;
@@ -129,6 +132,8 @@ void tx_application_define(void *first_unused_memory)
     tx_thread_create(&thread_1, strdup("thread 1"), thread_1_entry, 1,
                      pointer, DEMO_STACK_SIZE,
                      16, 16, 4, TX_AUTO_START);
+
+                     
 
     /* Allocate the memory for a small block pool.  */
     tx_byte_allocate(&byte_pool_0, (VOID **)&pointer, DEMO_BLOCK_POOL_SIZE, TX_NO_WAIT);
@@ -230,13 +235,16 @@ void thread_1_entry(ULONG thread_input)
     HAL_SD_GetCardCSD(&hsd1, &CSD);
     HAL_SD_GetCardInfo(&hsd1, &CardInfo);
     HAL_SD_GetCardStatus(&hsd1, &CSTA);
+    sd_device_create(&sdDevice, &hsd1, 4);
+    sd_device_card_init(&sdDevice);
+    Buffer buf = {.data = sd_buffer, .size = 512};
+    sd_device_block_create(&sdDevice, &sd_block, buf);
     while (1)
     {
         stream_receive_ready_wait(&stream, TX_WAIT_FOREVER);
         uint32_t len = ringbuffer_count_get(&uartRxRingBuffer);
         if (len > 0)
         {
-
             ringbuffer_read(&uartRxRingBuffer, txBuf0, len);
             stream_send(&stream, txBuf0, len);
             //w25qxx_write(&w25qxx_1, txBuf0, 0x0400, len);
