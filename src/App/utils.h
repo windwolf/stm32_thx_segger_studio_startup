@@ -7,14 +7,9 @@ extern "C"
 #endif
 
 #include "stdio.h"
+#include "tx_api.h"
 
-#ifdef DEBUG
-#define LOG(fmt, ...)           \
-    printf(fmt, ##__VA_ARGS__); \
-    printf("\n");
-#else
-#define LOG(fmt, ...) 
-#endif
+    
 
 #ifdef __cplusplus
 }

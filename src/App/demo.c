@@ -11,56 +11,58 @@
 #include "../Drivers/device/inc/w25qxx/w25qxx.h"
 #include "tracex.h"
 #include "stdint.h"
+#include "filex_demo.h"
 
 #define LOG_MODULE "demo"
 #include "log.h"
 
 extern UART_HandleTypeDef huart4;
-D2_BUFFER UartDevice uartDevice;
-D2_BUFFER uint8_t txBuf0[64];
-D2_BUFFER uint8_t uartRxBuffer[65];
-D2_BUFFER RingBuffer uartRxRingBuffer;
-D2_BUFFER Stream stream;
+RAM2_BUFFER UartDevice uartDevice;
+RAM2_BUFFER uint8_t txBuf0[64];
+RAM2_BUFFER uint8_t uartRxBuffer[65];
+RAM2_BUFFER RingBuffer uartRxRingBuffer;
+RAM2_BUFFER Stream stream;
 
 extern SPI_HandleTypeDef hspi4;
 PinDevice csPin;
 PinDevice dcPin;
-D2_BUFFER SpiDevice spi4Dev;
-D2_BUFFER SpiWithPinsDevice spi4pDev;
-D2_BUFFER FiveStepCommandClientSpi st7735_cmd;
+RAM2_BUFFER SpiDevice spi4Dev;
+RAM2_BUFFER SpiWithPinsDevice spi4pDev;
+RAM2_BUFFER FiveStepCommandClientSpi st7735_cmd;
 #define ST7735_BUFFER_SIZE 48114
-D2_BUFFER uint8_t st7735Buffer[ST7735_BUFFER_SIZE];
-D2_BUFFER ST77XX st7735;
+RAM2_BUFFER uint8_t st7735Buffer[ST7735_BUFFER_SIZE];
+RAM2_BUFFER ST77XX st7735;
 
-D1_BUFFER uint8_t data_buf[500];
+RAM1_BUFFER uint8_t data1_buf[500];
 
 #define W25QXX_BUFFER_SIZE W25QXX_BLOCK_SIZE
 
 extern SPI_HandleTypeDef hspi1;
-D2_DATA uint32_t w25qxx_1_id;
-D2_BUFFER PinDevice csPin_1;
-D2_BUFFER SpiDevice spi1Dev;
-D2_BUFFER SpiWithPinsDevice spi1pDev;
-D2_BUFFER FiveStepCommandClientSpi w25qxx_1_cmd;
-D2_BUFFER uint8_t w25qxx_1_buf[W25QXX_BUFFER_SIZE];
-D2_BUFFER W25QXX w25qxx_1;
-D2_BUFFER Block block1;
+RAM2_DATA uint32_t w25qxx_1_id;
+RAM2_BUFFER PinDevice csPin_1;
+RAM2_BUFFER SpiDevice spi1Dev;
+RAM2_BUFFER SpiWithPinsDevice spi1pDev;
+RAM2_BUFFER FiveStepCommandClientSpi w25qxx_1_cmd;
+RAM2_BUFFER uint8_t w25qxx_1_buf[W25QXX_BUFFER_SIZE];
+RAM2_BUFFER W25QXX w25qxx_1;
+RAM2_BUFFER Block block1;
 
 extern QSPI_HandleTypeDef hqspi;
-D2_DATA uint32_t w25qxx_2_id;
-D2_BUFFER FiveStepCommandClientQspi w25qxx_2_cmd;
-D2_BUFFER uint8_t w25qxx_2_buf[W25QXX_BUFFER_SIZE];
-D2_BUFFER W25QXX w25qxx_2;
-D2_BUFFER Block block2;
+uint8_t data2_buf[500];
+uint32_t w25qxx_2_id;
+FiveStepCommandClientQspi w25qxx_2_cmd;
+uint8_t w25qxx_2_buf[W25QXX_BUFFER_SIZE];
+W25QXX w25qxx_2;
+Block block2;
 
 extern SD_HandleTypeDef hsd1;
 SdDevice sdDevice;
 Block sd_block;
-D2_BUFFER uint8_t sd_buffer[512];
+RAM2_BUFFER uint8_t sd_buffer[512];
 
 int32_t cWrite = 0;
 int32_t cRead = 0;
-D2_DATA const char *text = "test wolf!";
+RAM2_DATA const char *text = "test wolf!";
 TX_THREAD thread_0;
 TX_THREAD thread_1;
 
@@ -70,6 +72,8 @@ UCHAR memory_area[DEMO_BYTE_POOL_SIZE];
 
 ULONG thread_0_counter;
 ULONG thread_1_counter;
+
+static void qspi_test();
 
 void init_driver()
 {
@@ -93,14 +97,18 @@ void init_driver()
     w25qxx_create(&w25qxx_1, (FiveStepCommandClient *)&w25qxx_1_cmd, 0);
     w25qxx_block_create(&w25qxx_1, &block1, buf2);
 
-    five_step_command_client_qspi_create(&w25qxx_2_cmd, &hqspi, 4);
+    five_step_command_client_qspi_create(&w25qxx_2_cmd, &hqspi, 40000);
     Buffer buf3 = {.data = w25qxx_2_buf, .size = W25QXX_BUFFER_SIZE};
     w25qxx_create(&w25qxx_2, (FiveStepCommandClient *)&w25qxx_2_cmd, 0);
     w25qxx_block_create(&w25qxx_2, &block2, buf3);
-    w25qxx_2.dummyCycles = 4;
+
+    sd_device_create(&sdDevice, &hsd1, 4);
+    sd_device_card_init(&sdDevice);
+    Buffer buf = {.data = sd_buffer, .size = 512};
+    sd_device_block_create(&sdDevice, &sd_block, buf);
 }
 
-void tx_application_define(void *first_unused_memory)
+void app_task_create(void *first_unused_memory)
 {
     TraceX_EnableTrace();
     init_driver();
@@ -133,16 +141,16 @@ void tx_application_define(void *first_unused_memory)
                      pointer, DEMO_STACK_SIZE,
                      16, 16, 4, TX_AUTO_START);
 
-                     
-
     /* Allocate the memory for a small block pool.  */
     tx_byte_allocate(&byte_pool_0, (VOID **)&pointer, DEMO_BLOCK_POOL_SIZE, TX_NO_WAIT);
+
+    //fx_application_define();
 }
 
 /* Define the test threads.  */
 
 #define LCD_DATA_SIZE 100
-D2_BUFFER static uint16_t lcddata[LCD_DATA_SIZE];
+RAM2_BUFFER static uint16_t lcddata[LCD_DATA_SIZE];
 void test05_init()
 {
     st7735.xOffset = 1;
@@ -208,37 +216,43 @@ HAL_SD_CardStatusTypeDef CSTA;
 void thread_1_entry(ULONG thread_input)
 {
     w25qxx_reset(&w25qxx_1);
+
     w25qxx_id_read(&w25qxx_1);
     LOG_D("W25QXX-1: mdId=%#x jedecId=%#x", w25qxx_1.mdId, w25qxx_1.jedecId);
     w25qxx_status_get(&w25qxx_1);
     LOG_D("W25QXX-1: s1=%d, s2=%d, s3=%d", w25qxx_1.status1, w25qxx_1.status2, w25qxx_1.status3);
 
-    w25qxx_1_id++;
-    LOG_D("W25QXX-1: w=%#x", w25qxx_1_id);
-    block_write(&block1, (uint8_t *)&w25qxx_1_id, 0x0000, 4);
-    block_read(&block1, data_buf, 0x0000, 256);
-    LOG_D("W25QXX-1: r=%#x", *((uint32_t *)data_buf));
-
     w25qxx_reset(&w25qxx_2);
     w25qxx_id_read(&w25qxx_2);
+    w25qxx_mode_switch(&w25qxx_2, W25QXX_CMD_MODE_QPI);
     LOG_D("W25QXX-2: mdId=%#x jedecId=%#x", w25qxx_2.mdId, w25qxx_2.jedecId);
     w25qxx_status_get(&w25qxx_2);
     LOG_D("W25QXX-2: s1=%d, s2=%d, s3=%d", w25qxx_2.status1, w25qxx_2.status2, w25qxx_2.status3);
 
-    w25qxx_2_id++;
-    LOG_D("W25QXX-2: w=%#x", w25qxx_2_id);
-    block_write(&block2, (uint8_t *)&w25qxx_2_id, 0x0000, 4);
-    block_read(&block2, data_buf, 0x0000, 256);
-    LOG_D("W25QXX-2: r=%#x", *((uint32_t *)data_buf));
+    //qspi_test();
 
-    HAL_SD_GetCardCID(&hsd1, &CID);
-    HAL_SD_GetCardCSD(&hsd1, &CSD);
-    HAL_SD_GetCardInfo(&hsd1, &CardInfo);
-    HAL_SD_GetCardStatus(&hsd1, &CSTA);
-    sd_device_create(&sdDevice, &hsd1, 4);
-    sd_device_card_init(&sdDevice);
-    Buffer buf = {.data = sd_buffer, .size = 512};
-    sd_device_block_create(&sdDevice, &sd_block, buf);
+    w25qxx_1_id = 0x11223344;
+    LOG_D("W25QXX-1: w=%#x", w25qxx_1_id);
+    block_write(&block1, (uint8_t *)&w25qxx_1_id, 0x0000, 4);
+    block_read(&block1, data1_buf, 0x0000, 256);
+    LOG_D("W25QXX-1: r=%#x", *((uint32_t *)data1_buf));
+
+    w25qxx_2_id = 0x55667788;
+    LOG_D("W25QXX-2: w=%#x", w25qxx_2_id);
+    block_read(&block2, data2_buf, 0x1000, 256);
+    LOG_D("W25QXX-2: r1=%#x", *((uint32_t *)data2_buf));
+    block_erase(&block2, 0x1000, 4096);
+    block_read(&block2, data2_buf, 0x1000, 256);
+    LOG_D("W25QXX-2: r2=%#x", *((uint32_t *)data2_buf));
+
+    _block_write_directly(&block2, (uint8_t *)&w25qxx_2_id, 0x1000, 4);
+    block_read(&block2, data2_buf, 0x1000, 256);
+    LOG_D("W25QXX-2: r3=%#x", *((uint32_t *)data2_buf));
+
+    block_write(&block2, (uint8_t *)&w25qxx_2_id, 0x1000, 4);
+    block_read(&block2, data2_buf, 0x1000, 256);
+    LOG_D("W25QXX-2: r4=%#x", *((uint32_t *)data2_buf));
+
     while (1)
     {
         stream_receive_ready_wait(&stream, TX_WAIT_FOREVER);
@@ -249,7 +263,7 @@ void thread_1_entry(ULONG thread_input)
             stream_send(&stream, txBuf0, len);
             //w25qxx_write(&w25qxx_1, txBuf0, 0x0400, len);
             //w25qxx_read(&w25qxx_1, data_buf, 0x0400, len);
-            LOG_D("W25QXX: ri=%d", *((uint32_t *)data_buf));
+            LOG_D("W25QXX-2: ri=%d", *((uint32_t *)data2_buf));
             tx_thread_sleep(10);
             //cRead++;
         }
@@ -260,4 +274,98 @@ void thread_1_entry(ULONG thread_input)
         // if (status != TX_SUCCESS)
         //     break;
     }
+}
+
+static void qspi_test()
+{
+    uint32_t rxData;
+    QSPI_CommandTypeDef cmd;
+    cmd.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    cmd.Instruction = W25QXX_SPI_READ_CMD;
+    cmd.AddressMode = QSPI_ADDRESS_1_LINE;
+    cmd.AddressSize = QSPI_ADDRESS_24_BITS;
+    cmd.Address = 0x1000;
+    cmd.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+    cmd.DummyCycles = 0;
+    cmd.DataMode = QSPI_DATA_1_LINE;
+    cmd.NbData = 4;
+    cmd.DdrMode = QSPI_DDR_MODE_DISABLE;
+    cmd.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
+    cmd.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
+    HAL_QSPI_Command(&hqspi, &cmd, HAL_MAX_DELAY);
+    HAL_QSPI_Receive(&hqspi, &rxData, HAL_MAX_DELAY);
+
+    cmd.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    cmd.Instruction = W25QXX_SPI_WRITE_ENABLE_CMD;
+    cmd.AddressMode = QSPI_ADDRESS_NONE;
+    cmd.AddressSize = QSPI_ADDRESS_24_BITS;
+    cmd.Address = 0x00;
+    cmd.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+    cmd.DummyCycles = 0;
+    cmd.DataMode = QSPI_DATA_NONE;
+    cmd.NbData = 4;
+    cmd.DdrMode = QSPI_DDR_MODE_DISABLE;
+    cmd.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
+    cmd.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
+    HAL_QSPI_Command(&hqspi, &cmd, HAL_MAX_DELAY);
+
+    uint8_t statusData = 0x02;
+    cmd.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    cmd.Instruction = W25QXX_SPI_WRITE_STATUS_REG2_CMD;
+    cmd.AddressMode = QSPI_ADDRESS_NONE;
+    cmd.AddressSize = QSPI_ADDRESS_24_BITS;
+    cmd.Address = 0x00;
+    cmd.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+    cmd.DummyCycles = 0;
+    cmd.DataMode = QSPI_DATA_1_LINE;
+    cmd.NbData = 1;
+    cmd.DdrMode = QSPI_DDR_MODE_DISABLE;
+    cmd.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
+    cmd.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
+    HAL_QSPI_Command(&hqspi, &cmd, HAL_MAX_DELAY);
+    HAL_QSPI_Transmit(&hqspi, &statusData, HAL_MAX_DELAY);
+
+    cmd.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    cmd.Instruction = W25QXX_SPI_ENTER_QPI_MODE_CMD;
+    cmd.AddressMode = QSPI_ADDRESS_NONE;
+    cmd.AddressSize = QSPI_ADDRESS_24_BITS;
+    cmd.Address = 0x1000;
+    cmd.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+    cmd.DummyCycles = 0;
+    cmd.DataMode = QSPI_DATA_NONE;
+    cmd.NbData = 4;
+    cmd.DdrMode = QSPI_DDR_MODE_DISABLE;
+    cmd.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
+    cmd.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
+    HAL_QSPI_Command(&hqspi, &cmd, HAL_MAX_DELAY);
+
+    cmd.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    cmd.Instruction = W25QXX_SPI_READ_CMD;
+    cmd.AddressMode = QSPI_ADDRESS_1_LINE;
+    cmd.AddressSize = QSPI_ADDRESS_24_BITS;
+    cmd.Address = 0x1000;
+    cmd.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+    cmd.DummyCycles = 0;
+    cmd.DataMode = QSPI_DATA_1_LINE;
+    cmd.NbData = 4;
+    cmd.DdrMode = QSPI_DDR_MODE_DISABLE;
+    cmd.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
+    cmd.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
+    HAL_QSPI_Command(&hqspi, &cmd, HAL_MAX_DELAY);
+    HAL_QSPI_Receive(&hqspi, &rxData, HAL_MAX_DELAY);
+
+    cmd.InstructionMode = QSPI_INSTRUCTION_4_LINES;
+    cmd.Instruction = W25QXX_SPI_FAST_READ_CMD;
+    cmd.AddressMode = QSPI_ADDRESS_4_LINES;
+    cmd.AddressSize = QSPI_ADDRESS_24_BITS;
+    cmd.Address = 0x1000;
+    cmd.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+    cmd.DummyCycles = 2;
+    cmd.DataMode = QSPI_DATA_4_LINES;
+    cmd.NbData = 4;
+    cmd.DdrMode = QSPI_DDR_MODE_DISABLE;
+    cmd.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
+    cmd.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
+    HAL_QSPI_Command(&hqspi, &cmd, HAL_MAX_DELAY);
+    HAL_QSPI_Receive(&hqspi, &rxData, HAL_MAX_DELAY);
 }

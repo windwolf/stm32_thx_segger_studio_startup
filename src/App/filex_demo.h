@@ -7,10 +7,10 @@ extern "C"
 #endif
 
 #include "fx_api.h"
-#include "fx_sd_driver.h"
+#include "filex/fx_sd_driver.h"
 
     void thread_2_entry(ULONG thread_input);
-    void fx_application_define(void *first_unused_memory);
+    void fx_application_define();
 #ifdef __cplusplus
 }
 #endif

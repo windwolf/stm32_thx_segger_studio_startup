@@ -6,7 +6,7 @@
 #include "fx_fault_tolerant.h"
 #endif /* FX_ENABLE_FAULT_TOLERANT */
 
-#define DEMO_STACK_SIZE 2048
+#define DEMO_STACK_SIZE 4096
 
 /* Buffer for FileX FX_MEDIA sector cache. This must be large enough for at least one
    sector, which are typically 512 bytes in size.  */
@@ -28,6 +28,7 @@ VOID _fx_ram_driver(FX_MEDIA *media_ptr);
 FX_MEDIA sd_disk;
 FX_FILE my_file;
 
+uint8_t *thread2_stack[DEMO_STACK_SIZE];
 /* Define ThreadX global data structures.  */
 
 #ifndef FX_STANDALONE_ENABLE
@@ -38,27 +39,19 @@ ULONG thread_2_counter;
 /* Define what the initial system looks like.  */
 
 #ifndef FX_STANDALONE_ENABLE
-CHAR *fx_application_define(void *first_unused_memory)
+void fx_application_define()
 {
-
     CHAR *pointer;
-
-    /* Put first available memory address into a character pointer.  */
-    pointer = (CHAR *)first_unused_memory;
-
     /* Put system definition stuff in here, e.g. thread creates and other assorted
        create information.  */
 
     /* Create the main thread.  */
     tx_thread_create(&thread_2, "thread 2", thread_2_entry, 0,
-                     pointer, DEMO_STACK_SIZE,
+                     thread2_stack, DEMO_STACK_SIZE,
                      1, 1, TX_NO_TIME_SLICE, TX_AUTO_START);
-    pointer = pointer + DEMO_STACK_SIZE;
 
     /* Initialize FileX.  */
     fx_system_initialize();
-
-    return pointer;
 }
 
 #endif
