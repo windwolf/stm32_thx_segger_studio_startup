@@ -58,7 +58,7 @@ Block block2;
 extern SD_HandleTypeDef hsd1;
 SdDevice sdDevice;
 Block sd_block;
-RAM2_BUFFER uint8_t sd_buffer[512];
+AXI_BUFFER uint8_t sd_buffer[512];
 
 int32_t cWrite = 0;
 int32_t cRead = 0;
@@ -106,45 +106,59 @@ void init_driver()
     sd_device_card_init(&sdDevice);
     Buffer buf = {.data = sd_buffer, .size = 512};
     sd_device_block_create(&sdDevice, &sd_block, buf);
+
+    // HAL_SD_CardStatusTypeDef status;
+    // HAL_SD_InitCard(&hsd1);
+    // HAL_SD_GetCardStatus(&hsd1, &status);
+    // HAL_StatusTypeDef rst = HAL_SD_ReadBlocks(&hsd1, sd_buffer, 0, 1, HAL_MAX_DELAY);
+    // (*sd_buffer)++;
+    // rst = HAL_SD_WriteBlocks(&hsd1, sd_buffer, 0, 1, HAL_MAX_DELAY);
+    // *sd_buffer = 0;
+    // rst = HAL_SD_ReadBlocks_DMA(&hsd1, sd_buffer, 0, 1);
+    // HAL_Delay(100);
+    // HAL_SD_StateTypeDef state = HAL_SD_GetState(&hsd1);
+
+    // SCB_InvalidateDCache_by_Addr(sd_buffer, 512);
+    // HAL_Delay(100);
+    // state = HAL_SD_GetState(&hsd1);
+    // SCB_InvalidateDCache_by_Addr(sd_buffer, 512);
 }
 
 void app_task_create(void *first_unused_memory)
 {
     TraceX_EnableTrace();
     init_driver();
-    // UartDevice_Init(&uart, &huart4, &uartRxRingBuffer);
-    // UartDevice_StartServer(&uart);
 
     CHAR *pointer = NULL;
 
     /* Create a byte memory pool from which to allocate the thread stacks.  */
-    tx_byte_pool_create(&byte_pool_0, strdup("byte pool 0"), memory_area, DEMO_BYTE_POOL_SIZE);
+    //tx_byte_pool_create(&byte_pool_0, strdup("byte pool 0"), memory_area, DEMO_BYTE_POOL_SIZE);
 
-    /* Put system definition stuff in here, e.g. thread creates and other assorted
-       create information.  */
+    ///* Put system definition stuff in here, e.g. thread creates and other assorted
+    //   create information.  */
 
-    /* Allocate the stack for thread 0.  */
-    tx_byte_allocate(&byte_pool_0, (VOID **)&pointer, DEMO_STACK_SIZE, TX_NO_WAIT);
+    ///* Allocate the stack for thread 0.  */
+    //tx_byte_allocate(&byte_pool_0, (VOID **)&pointer, DEMO_STACK_SIZE, TX_NO_WAIT);
 
-    /* Create the main thread.  */
-    tx_thread_create(&thread_0, strdup("thread 0"), thread_0_entry, 0,
-                     pointer, DEMO_STACK_SIZE,
-                     1, 1, TX_NO_TIME_SLICE, TX_AUTO_START);
+    ///* Create the main thread.  */
+    //tx_thread_create(&thread_0, strdup("thread 0"), thread_0_entry, 0,
+    //                 pointer, DEMO_STACK_SIZE,
+    //                 1, 1, TX_NO_TIME_SLICE, TX_AUTO_START);
 
-    /* Allocate the stack for thread 1.  */
-    tx_byte_allocate(&byte_pool_0, (VOID **)&pointer, DEMO_STACK_SIZE, TX_NO_WAIT);
+    ///* Allocate the stack for thread 1.  */
+    //tx_byte_allocate(&byte_pool_0, (VOID **)&pointer, DEMO_STACK_SIZE, TX_NO_WAIT);
 
-    /* Create threads 1 and 2. These threads pass information through a ThreadX 
-       message queue.  It is also interesting to note that these threads have a time
-       slice.  */
-    tx_thread_create(&thread_1, strdup("thread 1"), thread_1_entry, 1,
-                     pointer, DEMO_STACK_SIZE,
-                     16, 16, 4, TX_AUTO_START);
+    ///* Create threads 1 and 2. These threads pass information through a ThreadX
+    //   message queue.  It is also interesting to note that these threads have a time
+    //   slice.  */
+    //tx_thread_create(&thread_1, strdup("thread 1"), thread_1_entry, 1,
+    //                 pointer, DEMO_STACK_SIZE,
+    //                 16, 16, 4, TX_AUTO_START);
 
     /* Allocate the memory for a small block pool.  */
     tx_byte_allocate(&byte_pool_0, (VOID **)&pointer, DEMO_BLOCK_POOL_SIZE, TX_NO_WAIT);
 
-    //fx_application_define();
+    fx_application_define();
 }
 
 /* Define the test threads.  */
@@ -229,7 +243,7 @@ void thread_1_entry(ULONG thread_input)
     w25qxx_status_get(&w25qxx_2);
     LOG_D("W25QXX-2: s1=%d, s2=%d, s3=%d", w25qxx_2.status1, w25qxx_2.status2, w25qxx_2.status3);
 
-    //qspi_test();
+    // qspi_test();
 
     w25qxx_1_id = 0x11223344;
     LOG_D("W25QXX-1: w=%#x", w25qxx_1_id);

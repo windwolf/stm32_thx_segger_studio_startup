@@ -1,6 +1,7 @@
 /* This is a small demo of the high-performance FileX FAT file system. It includes setup for
    a small 34KB RAM disk and a loop that writes and reads a small file.  */
 #include "filex_demo.h"
+#include "mem_layout.h"
 
 #ifdef FX_ENABLE_FAULT_TOLERANT
 #include "fx_fault_tolerant.h"
@@ -11,7 +12,7 @@
 /* Buffer for FileX FX_MEDIA sector cache. This must be large enough for at least one
    sector, which are typically 512 bytes in size.  */
 
-unsigned char media_memory[512];
+AXI_BUFFER unsigned char media_memory[512];
 
 #ifdef FX_ENABLE_FAULT_TOLERANT
 UCHAR fault_tolerant_memory[FX_FAULT_TOLERANT_MAXIMUM_LOG_FILE_SIZE];
