@@ -104,8 +104,18 @@
       exclude=""
       filter=""
       path="Drivers"
-      recurse="Yes" />
-    <folder Name="App" exclude="" filter="" path="App" recurse="Yes" />
+      recurse="Yes">
+      <configuration
+        Name="Common"
+        default_code_section=".driver.text"
+        default_const_section=".driver.rodata" />
+    </folder>
+    <folder Name="App" exclude="" filter="" path="App" recurse="Yes">
+      <configuration
+        Name="Common"
+        default_code_section=".app.text"
+        default_const_section=".app.rodata" />
+    </folder>
     <folder Name="Boot" exclude="" filter="" path="Boot" recurse="Yes">
       <configuration
         Name="Common"
