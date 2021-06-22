@@ -58,7 +58,7 @@ define memory with size = 4G;
 //
 // Combined regions per memory type
 //
-define region FLASH = FLASH1;
+define region FLASH = FLASH1 + FLASH2;
 define region RAM_CODE   = ITCM_RAM1;
 define region RAM_DATA   = DTCM_RAM1 + AXI_RAM1;
 //
@@ -76,7 +76,10 @@ define block tdata_load                     { copy of block tdata };
 define block heap  with size = __HEAPSIZE__,  alignment = 8, /* fill =0x00, */ readwrite access { };
 define block stack with size = __STACKSIZE__, alignment = 8, /* fill =0xCD, */ readwrite access { };
 
-
+define block code_tx { section .text.tx_*, section .text._tx_*, section .text._txe_*, section .text._txr_* };
+define block code_fx { section .text.fx_*, section .text._fx_*, section .text._fxe_*, section .text._fxr_* };
+define block code_isr { section .init.*_IRQHandler, section .text.*_IRQHandler, section .text.*Callback };
+define block code_libc { section .text.libc.* };
 //
 // Explicit initialization settings for sections
 // Packing options for initialize by copy: packing=auto/lzss/zpak/packbits
@@ -94,6 +97,10 @@ initialize by symbol __SEGGER_init_ctors    { block ctors };                    
 // Explicit placement in FLASHn
 //
 place in FLASH1                             { section .FLASH1, section .FLASH1.* };
+place in FLASH2                             { section .FLASH2, section .FLASH2.* };
+
+place in FLASH2                             { section .app^.*, section .driver^.*, block code_fx };
+
 //
 // FLASH Placement
 //
@@ -133,10 +140,7 @@ place in RAM_DATA                           { block heap };                     
 
 
 
-define block code_tx { section .text.tx_*, section .text._tx_*, section .text._txe_*, section .text._txr_* };
-define block code_fx { section .text.fx_*, section .text._fx_*, section .text._fxe_*, section .text._fxr_* };
-define block code_isr { section .init.*_IRQHandler, section .text.*_IRQHandler, section .text.*Callback };
-define block code_libc { section .text.libc.* };
+
 
 initialize by copy with packing=auto   { section .RAM1.DATA^.*
                                                     , section .RAM2.DATA^.*
@@ -147,7 +151,6 @@ initialize by copy with packing=auto   { section .RAM1.DATA^.*
                                                     };
 initialize by copy with packing=auto        { block code_tx
                                             , block code_isr
-                                            , block code_fx
                                             , block code_libc 
                                             };   
 
@@ -158,5 +161,4 @@ place in RAM_CODE with auto order                 { section .fast
                                                   , block code_libc
                                                   , block code_isr
                                                   , block code_tx
-                                                  , block code_fx
                                                   };   // "ramfunc" section
