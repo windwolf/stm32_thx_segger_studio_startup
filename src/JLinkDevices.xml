@@ -1,0 +1,6 @@
+<DataBase>
+  <Device>
+    <ChipInfo Vendor="ST" Name="STM32H750VB" Core="JLINK_CORE_CORTEX_M7" />
+    <FlashBankInfo Name="QSPI Flash" BaseAddr="0x90000000" MaxSize="0x08000000" Loader="Devices/ST/STM32H7/STM32H7xx_W25Q128_WeActStudio.FLM" LoaderType="FLASH_ALGO_TYPE_OPEN" />
+  </Device>
+</DataBase>
