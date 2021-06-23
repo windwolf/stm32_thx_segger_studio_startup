@@ -29,8 +29,8 @@ static HAL_StatusTypeDef bootloader_qspi_ddr_mm(QSPI_CommandTypeDef *cmd);
 //     HAL_StatusTypeDef rst;
 //     MX_QUADSPI_Init();
 
-//     five_step_command_client_qspi_create(&qspi_cmd, &hqspi, 4);
-//     w25qxx_create(&qspi_w25qxx, (FiveStepCommandClient *)&qspi_cmd, 0);
+//     command_qspi_create(&qspi_cmd, &hqspi, 4);
+//     w25qxx_create(&qspi_w25qxx, (Command *)&qspi_cmd, 0);
 
 //     w25qxx_reset(&qspi_w25qxx);
 //     qspi_w25qxx.status2Bits.QE = 1;

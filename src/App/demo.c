@@ -2,7 +2,7 @@
 #include "demo.h"
 #include "mem_layout.h"
 #include "../Drivers/common/inc/common/stream.h"
-#include "../Drivers/common/inc/common/fscc.h"
+#include "../Drivers/common/inc/common/command.h"
 #include "../Drivers/common/inc/common/device.h"
 #include "../Drivers/common/inc/common/block.h"
 #include "bsp.h"
@@ -28,7 +28,7 @@ PinDevice csPin;
 PinDevice dcPin;
 RAM2_BUFFER SpiDevice spi4Dev;
 RAM2_BUFFER SpiWithPinsDevice spi4pDev;
-RAM2_BUFFER FiveStepCommandClientSpi st7735_cmd;
+RAM2_BUFFER CommandSpi st7735_cmd;
 #define ST7735_BUFFER_SIZE 48114
 RAM2_BUFFER uint8_t st7735Buffer[ST7735_BUFFER_SIZE];
 RAM2_BUFFER ST77XX st7735;
@@ -42,7 +42,7 @@ uint32_t w25qxx_1_id;
 RAM2_BUFFER PinDevice csPin_1;
 RAM2_BUFFER SpiDevice spi1Dev;
 RAM2_BUFFER SpiWithPinsDevice spi1pDev;
-RAM2_BUFFER FiveStepCommandClientSpi w25qxx_1_cmd;
+RAM2_BUFFER CommandSpi w25qxx_1_cmd;
 RAM2_BUFFER uint8_t w25qxx_1_buf[W25QXX_BUFFER_SIZE];
 RAM2_BUFFER W25QXX w25qxx_1;
 RAM2_BUFFER Block block1;
@@ -96,16 +96,16 @@ void init_driver()
     pin_device_create(&dcPin, GPIOE, GPIO_PIN_13, PIN_DEVICE_STATUS_INVERSE_NORMAL);
     spi_device_create(&spi4Dev, &hspi4, 4);
     spi_with_pins_device_create(&spi4pDev, &spi4Dev, NULL, NULL, &dcPin);
-    five_step_command_client_spi_create(&st7735_cmd, &spi4pDev);
+    command_spi_create(&st7735_cmd, &spi4pDev);
     Buffer buf1 = {.data = st7735Buffer, .size = ST7735_BUFFER_SIZE};
-    st7735_create(&st7735, (FiveStepCommandClient *)&st7735_cmd, buf1);
+    st7735_create(&st7735, (Command *)&st7735_cmd, buf1);
 
     pin_device_create(&csPin_1, GPIOD, GPIO_PIN_6, PIN_DEVICE_STATUS_INVERSE_INVERSE);
     spi_device_create(&spi1Dev, &hspi1, 4);
     spi_with_pins_device_create(&spi1pDev, &spi1Dev, &csPin_1, NULL, NULL);
-    five_step_command_client_spi_create(&w25qxx_1_cmd, &spi1pDev);
+    command_spi_create(&w25qxx_1_cmd, &spi1pDev);
     Buffer buf2 = {.data = w25qxx_1_buf, .size = W25QXX_BUFFER_SIZE};
-    w25qxx_create(&w25qxx_1, (FiveStepCommandClient *)&w25qxx_1_cmd, 0);
+    w25qxx_create(&w25qxx_1, (Command *)&w25qxx_1_cmd, 0);
     w25qxx_block_create(&w25qxx_1, &block1, buf2);
 
     sd_device_create(&sdDevice, &hsd1, 4);
