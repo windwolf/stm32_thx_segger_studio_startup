@@ -92,9 +92,9 @@ void thread_2_entry(ULONG thread_input)
                              1,                    // Number of FATs
                              256,                  // Directory Entries
                              0,                    // Hidden sectors
-                             256,                  // Total sectors
+                             0x1000,               // Total sectors
                              512,                  // Sector size
-                             8,                    // Sectors per cluster
+                             1,                    // Sectors per cluster
                              1,                    // Heads
                              1);                   // Sectors per track
 #endif /* FX_ENABLE_EXFAT */
@@ -104,7 +104,7 @@ void thread_2_entry(ULONG thread_input)
     {
 
         /* Open the RAM disk.  */
-        status = fx_media_open(&sd_disk, "RAM DISK", fx_sd_driver, &sdDevice, media_memory, sizeof(media_memory));
+        status = fx_media_open(&sd_disk, "SD1", fx_sd_driver, &sdDevice, media_memory, sizeof(media_memory));
 
         /* Check the media open status.  */
         if (status != FX_SUCCESS)
