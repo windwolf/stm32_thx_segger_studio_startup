@@ -2,12 +2,13 @@
    a small 34KB RAM disk and a loop that writes and reads a small file.  */
 #include "filex_demo.h"
 #include "mem_layout.h"
+#include "stm32h7xx_hal.h"
 
 #ifdef FX_ENABLE_FAULT_TOLERANT
 #include "fx_fault_tolerant.h"
 #endif /* FX_ENABLE_FAULT_TOLERANT */
 
-#define DEMO_STACK_SIZE 4096
+#define DEMO_STACK_SIZE 10000
 
 /* Buffer for FileX FX_MEDIA sector cache. This must be large enough for at least one
    sector, which are typically 512 bytes in size.  */
@@ -90,13 +91,14 @@ void thread_2_entry(ULONG thread_input)
                              sizeof(media_memory), // Media buffer size
                              "SD1",                // Volume Name
                              1,                    // Number of FATs
-                             256,                  // Directory Entries
+                             0x1000,                    // Directory Entries
                              0,                    // Hidden sectors
-                             0x1000,               // Total sectors
+                             0x100000,               // Total sectors
                              512,                  // Sector size
                              1,                    // Sectors per cluster
                              1,                    // Heads
                              1);                   // Sectors per track
+
 #endif /* FX_ENABLE_EXFAT */
 
     /* Loop to repeat the demo over and over!  */

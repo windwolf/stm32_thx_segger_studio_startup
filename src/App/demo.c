@@ -47,23 +47,6 @@ RAM2_BUFFER uint8_t w25qxx_1_buf[W25QXX_BUFFER_SIZE];
 RAM2_BUFFER W25QXX w25qxx_1;
 RAM2_BUFFER Block block1;
 
-RAM2_DATA const char *placehold = "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634"
-                                  "856745624652456456347576567sdgwer yy35hewhaeh nwyr5j5 wjrtnsf8vansq3pg9 qerbapeuv qp34uejkv a;sdsvj asfwao gawogi a'oig g4562465246245626456245634";
 extern SD_HandleTypeDef hsd1;
 SdDevice sdDevice;
 Block sd_block;

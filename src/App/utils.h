@@ -9,8 +9,6 @@ extern "C"
 #include "stdio.h"
 #include "tx_api.h"
 
-    
-
 #ifdef __cplusplus
 }
 #endif

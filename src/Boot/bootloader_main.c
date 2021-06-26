@@ -2,7 +2,6 @@
 #include "dcmi.h"
 #include "dma.h"
 #include "i2c.h"
-#include "mdma.h"
 #include "quadspi.h"
 #include "sdmmc.h"
 #include "spi.h"
@@ -13,23 +12,29 @@
 
 #include "bootloader_qspi.h"
 #include "app_main.h"
+
+//#include "../cmbBackTrace/cm_backtrace.h"
+
+extern void MPU_Config(void);
+
 int main(void)
 {
     /* USER CODE BEGIN 1 */
 
     /* USER CODE END 1 */
 
-    /* Enable I-Cache---------------------------------------------------------*/
+    /* Enable I-Cache--------------------------------------------------------*/
     SCB_EnableICache();
 
     /* Enable D-Cache---------------------------------------------------------*/
     SCB_EnableDCache();
-
+    HAL_MPU_Disable();
+    //MPU_Config();
     /* MCU Configuration--------------------------------------------------------*/
 
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
-
+    //cm_backtrace_init("startup", "1.0", "0.1");
     /* USER CODE BEGIN Init */
 
     /* USER CODE END Init */
@@ -45,7 +50,7 @@ int main(void)
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
     MX_DMA_Init();
-    MX_MDMA_Init();
+    //MX_MDMA_Init();
     MX_USART1_UART_Init();
     MX_DCMI_Init();
     MX_I2C1_Init();

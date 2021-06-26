@@ -219,9 +219,9 @@ void HardFaultHandler(unsigned int* pStack) {
   // Halt execution
   // If NVIC registers indicate readable memory, change the variable value to != 0 to continue execution.
   //
-  _Continue = 0u;
-  while (_Continue == 0u) {
-  }
+  //_Continue = 0u;
+  //while (_Continue == 0u) {
+  //}
   //
   // Read saved registers from the stack.
   //

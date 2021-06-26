@@ -197,26 +197,26 @@ static HAL_StatusTypeDef bootloader_qspi_mm(QSPI_CommandTypeDef *cmd)
 {
     HAL_StatusTypeDef rst;
 
-    cmd->InstructionMode = QSPI_INSTRUCTION_1_LINE;
-    cmd->Instruction = 0xEB;
+    // cmd->InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    // cmd->Instruction = 0xEB;
 
-    cmd->AddressMode = QSPI_ADDRESS_4_LINES;
-    cmd->AddressSize = QSPI_ADDRESS_24_BITS;
-    cmd->Address = 0x000000;
-    cmd->AlternateByteMode = QSPI_ALTERNATE_BYTES_4_LINES;
-    cmd->AlternateBytesSize = QSPI_ALTERNATE_BYTES_8_BITS;
-    cmd->AlternateBytes = 0x00 << 4;
+    // cmd->AddressMode = QSPI_ADDRESS_4_LINES;
+    // cmd->AddressSize = QSPI_ADDRESS_24_BITS;
+    // cmd->Address = 0x000000;
+    // cmd->AlternateByteMode = QSPI_ALTERNATE_BYTES_4_LINES;
+    // cmd->AlternateBytesSize = QSPI_ALTERNATE_BYTES_8_BITS;
+    // cmd->AlternateBytes = 0x00 << 4;
 
-    cmd->DummyCycles = 4;
+    // cmd->DummyCycles = 4;
 
-    cmd->DataMode = QSPI_DATA_4_LINES;
-    cmd->NbData = 4;
-    cmd->DdrMode = QSPI_DDR_MODE_DISABLE;
-    cmd->DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
-    cmd->SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
-    uint32_t data;
-    rst = HAL_QSPI_Command(&hqspi, cmd, HAL_MAX_DELAY);
-    rst = HAL_QSPI_Receive(&hqspi, &data, HAL_MAX_DELAY);
+    // cmd->DataMode = QSPI_DATA_4_LINES;
+    // cmd->NbData = 4;
+    // cmd->DdrMode = QSPI_DDR_MODE_DISABLE;
+    // cmd->DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
+    // cmd->SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
+    // uint32_t data;
+    // rst = HAL_QSPI_Command(&hqspi, cmd, HAL_MAX_DELAY);
+    // rst = HAL_QSPI_Receive(&hqspi, &data, HAL_MAX_DELAY);
 
     QSPI_MemoryMappedTypeDef mmCfg = {0};
 
