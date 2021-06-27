@@ -1,7 +1,46 @@
 <!DOCTYPE CrossStudio_Project_File>
 <solution Name="startup" target="8" version="2">
   <project Name="startup">
-    <configuration CMSIS_CORE="Yes" LIBRARY_IO_TYPE="RTT" Name="Common" Target="STM32H750VBTx" analyze_after_compile="Yes" arm_architecture="v7EM" arm_assembler_variant="clang" arm_compiler_variant="SEGGER" arm_core_type="Cortex-M7" arm_endian="Little" arm_fp_abi="Hard" arm_fpu_type="FPv5-D16" arm_linker_heap_size="0" arm_linker_process_stack_size="0" arm_linker_stack_size="4096" arm_linker_variant="SEGGER" arm_rtl_variant="SEGGER" arm_simulator_memory_simulation_parameter="ROM;0x08000000;0x00020000;RAM;0x20000000;0x00020000;RAM;0x24000000;0x00080000;RAM;0x30000000;0x00048000;RAM;0x38000000;0x00010000" arm_target_debug_interface_type="ADIv5" arm_target_device_name="STM32H750VB" arm_target_interface_type="SWD" c_preprocessor_definitions="CORE_CM7;__VTOR_CONFIG;STM32H750xx;__STM32H7xx_FAMILY;__STM32H750_SUBFAMILY;ARM_MATH_CM7;TX_INCLUDE_USER_DEFINE_FILE;FX_INCLUDE_USER_DEFINE_FILE;USE_FULL_LL_DRIVER;USE_HAL_DRIVER;__VECTORS_IN_RAM;DATA_IN_D2_SRAM;SEGGER_FAULT_HANDLER" c_user_include_directories="$(ProjectDir)/CMSIS_5/CMSIS/Core/Include;$(ProjectDir)/STM32H7xx/CMSIS/Device/Include;$(ProjectDir)/CubeMx/Core/Inc;$(ProjectDir)/CubeMx/FileX/App;$(ProjectDir)/CubeMx/FileX/Target;$(ProjectDir)/CubeMx/LevelX/App;$(ProjectDir)/CubeMx/LevelX/Target;$(ProjectDir)/CubeMx/Drivers/STM32H7xx_HAL_Driver/Inc;$(ProjectDir)/CubeMx/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;$(ProjectDir)/CubeMx/Middlewares/ST/filex/Common/inc;$(ProjectDir)/CubeMx/Middlewares/ST/filex/ports/generic/inc;$(ProjectDir)/CubeMx/Middlewares/ST/threadx/common/inc;$(ProjectDir)/CubeMx/Middlewares/ST/threadx/ports/cortex_m7/gnu/inc;$(ProjectDir)/Drivers/common/inc;$(ProjectDir)/Drivers/bsp/stm32h750/inc;$(ProjectDir)/Drivers/device/inc;$(ProjectDir)/Drivers/driver/inc;$(ProjectDir)/Drivers/os/inc;${ProjectDir}/cmbBackTrace;$(ProjectDir)/App;$(ProjectDir)/Boot" debug_register_definition_file="$(ProjectDir)/STM32H750x_Registers.xml" debug_stack_pointer_start="__stack_end__" debug_target_connection="J-Link" default_isr_section=".fast.text" file_codec="UTF-8" gcc_c_language_standard="gnu17" gcc_cplusplus_language_standard="gnu++17" gcc_entry_point="Reset_Handler" link_linker_script_file="$(ProjectDir)/STM32H7xx_Flash_Variant4.icf" linker_memory_map_file="$(ProjectDir)/STM32H750VBTx_MemoryMap.xml" linker_printf_width_precision_supported="Yes" macros="DeviceHeaderFile=$(PackagesDir)/STM32H7xx/CMSIS/Device/Include/stm32h7xx.h;DeviceLibraryIdentifier=M7lfdp;DeviceSystemFile=$(PackagesDir)/STM32H7xx/CMSIS/Device/Source/Templates/system_stm32h7xx.c;DeviceVectorsFile=$(PackagesDir)/STM32H7xx/Source/STM32H750x_Vectors.s;DeviceFamily=STM32H7xx;DeviceSubFamily=STM32H750;Target=STM32H750VBTx" project_directory="" project_type="Executable" target_reset_script="Reset();" target_trace_initialize_script="EnableTrace(&quot;$(TraceInterfaceType)&quot;)" />
+    <configuration
+      CMSIS_CORE="Yes"
+      LIBRARY_IO_TYPE="RTT"
+      Name="Common"
+      Target="STM32H750VBTx"
+      analyze_after_compile="Yes"
+      arm_architecture="v7EM"
+      arm_assembler_variant="clang"
+      arm_compiler_variant="SEGGER"
+      arm_core_type="Cortex-M7"
+      arm_endian="Little"
+      arm_fp_abi="Hard"
+      arm_fpu_type="FPv5-D16"
+      arm_linker_heap_size="0"
+      arm_linker_process_stack_size="0"
+      arm_linker_stack_size="4096"
+      arm_linker_variant="SEGGER"
+      arm_rtl_variant="SEGGER"
+      arm_simulator_memory_simulation_parameter="ROM;0x08000000;0x00020000;RAM;0x20000000;0x00020000;RAM;0x24000000;0x00080000;RAM;0x30000000;0x00048000;RAM;0x38000000;0x00010000"
+      arm_target_debug_interface_type="ADIv5"
+      arm_target_device_name="STM32H750VB"
+      arm_target_interface_type="SWD"
+      c_preprocessor_definitions="CORE_CM7;__VTOR_CONFIG;STM32H750xx;__STM32H7xx_FAMILY;__STM32H750_SUBFAMILY;ARM_MATH_CM7;TX_INCLUDE_USER_DEFINE_FILE;FX_INCLUDE_USER_DEFINE_FILE;USE_FULL_LL_DRIVER;USE_HAL_DRIVER;__VECTORS_IN_RAM;DATA_IN_D2_SRAM;SEGGER_FAULT_HANDLER"
+      c_user_include_directories="$(ProjectDir)/CMSIS_5/CMSIS/Core/Include;$(ProjectDir)/STM32H7xx/CMSIS/Device/Include;$(ProjectDir)/CubeMx/Core/Inc;$(ProjectDir)/CubeMx/FileX/App;$(ProjectDir)/CubeMx/FileX/Target;$(ProjectDir)/CubeMx/LevelX/App;$(ProjectDir)/CubeMx/LevelX/Target;$(ProjectDir)/CubeMx/Drivers/STM32H7xx_HAL_Driver/Inc;$(ProjectDir)/CubeMx/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;$(ProjectDir)/CubeMx/Middlewares/ST/filex/Common/inc;$(ProjectDir)/CubeMx/Middlewares/ST/filex/ports/generic/inc;$(ProjectDir)/CubeMx/Middlewares/ST/threadx/common/inc;$(ProjectDir)/CubeMx/Middlewares/ST/threadx/ports/cortex_m7/gnu/inc;$(ProjectDir)/Drivers/common/inc;$(ProjectDir)/Drivers/bsp/stm32h750/inc;$(ProjectDir)/Drivers/device/inc;$(ProjectDir)/Drivers/driver/inc;$(ProjectDir)/Drivers/os/inc;${ProjectDir}/cmbBackTrace;$(ProjectDir)/App;$(ProjectDir)/Boot;$(ProjectDir)/guix/common/inc;$(ProjectDir)/guix/ports/cortex_m7/gnu/inc"
+      debug_register_definition_file="$(ProjectDir)/STM32H750x_Registers.xml"
+      debug_stack_pointer_start="__stack_end__"
+      debug_target_connection="J-Link"
+      default_isr_section=".fast.text"
+      file_codec="UTF-8"
+      gcc_c_language_standard="gnu17"
+      gcc_cplusplus_language_standard="gnu++17"
+      gcc_entry_point="Reset_Handler"
+      link_linker_script_file="$(ProjectDir)/STM32H7xx_Flash_Variant4.icf"
+      linker_memory_map_file="$(ProjectDir)/STM32H750VBTx_MemoryMap.xml"
+      linker_printf_width_precision_supported="Yes"
+      macros="DeviceHeaderFile=$(PackagesDir)/STM32H7xx/CMSIS/Device/Include/stm32h7xx.h;DeviceLibraryIdentifier=M7lfdp;DeviceSystemFile=$(PackagesDir)/STM32H7xx/CMSIS/Device/Source/Templates/system_stm32h7xx.c;DeviceVectorsFile=$(PackagesDir)/STM32H7xx/Source/STM32H750x_Vectors.s;DeviceFamily=STM32H7xx;DeviceSubFamily=STM32H750;Target=STM32H750VBTx"
+      project_directory=""
+      project_type="Executable"
+      target_reset_script="Reset();"
+      target_trace_initialize_script="EnableTrace(&quot;$(TraceInterfaceType)&quot;)" />
     <folder Name="CMSIS Files">
       <file file_name="STM32H7xx/CMSIS/Device/Include/stm32h7xx.h" />
     </folder>
@@ -20,27 +59,94 @@
       <file file_name="STM32H7xx/Source/SEGGER_HardFaultHandler.c" />
     </folder>
     <folder Name="CubeMx">
-      <folder Name="Core" exclude="" filter="" path="cubemx/Core" recurse="Yes" />
-      <folder Name="Hal" exclude="*template*" filter="" path="cubemx/Drivers/STM32H7xx_HAL_Driver" recurse="Yes">
-        <configuration Name="Common" unity_build_exclude_filter="*template*" />
+      <folder
+        Name="Core"
+        exclude=""
+        filter=""
+        path="cubemx/Core"
+        recurse="Yes" />
+      <folder
+        Name="Hal"
+        exclude="*template*"
+        filter=""
+        path="cubemx/Drivers/STM32H7xx_HAL_Driver"
+        recurse="Yes">
+        <configuration
+          Name="Common"
+          unity_build_exclude_filter="*template*" />
       </folder>
-      <folder Name="Middlewares" exclude="" filter="" path="cubemx/Middlewares" recurse="Yes" />
-      <folder Name="FileX" exclude="" filter="" path="cubemx/FileX" recurse="Yes" />
-      <configuration Name="Common" analyze_after_compile="No" filter="" unity_build_exclude_filter="*template*" />
-      <folder Name="LevelX" exclude="" filter="" path="cubemx/LevelX" recurse="Yes" />
+      <folder
+        Name="Middlewares"
+        exclude=""
+        filter=""
+        path="cubemx/Middlewares"
+        recurse="Yes" />
+      <folder
+        Name="FileX"
+        exclude=""
+        filter=""
+        path="cubemx/FileX"
+        recurse="Yes" />
+      <configuration
+        Name="Common"
+        analyze_after_compile="No"
+        filter=""
+        unity_build_exclude_filter="*template*" />
+      <folder
+        Name="LevelX"
+        exclude=""
+        filter=""
+        path="cubemx/LevelX"
+        recurse="Yes" />
     </folder>
     <configuration Name="Debug" c_preprocessor_definitions="DEBUG" />
-    <folder Name="Drivers" exclude="" filter="" path="Drivers" recurse="Yes">
-      <configuration Name="Common" default_code_section=".driver.text" default_const_section=".driver.rodata" />
+    <folder
+      Name="Drivers"
+      exclude=""
+      filter=""
+      path="Drivers"
+      recurse="Yes">
+      <configuration
+        Name="Common"
+        default_code_section=".driver.text"
+        default_const_section=".driver.rodata" />
     </folder>
     <folder Name="App" exclude="" filter="" path="App" recurse="Yes">
-      <configuration Name="Common" default_code_section=".app.text" default_const_section=".app.rodata" />
+      <configuration
+        Name="Common"
+        default_code_section=".app.text"
+        default_const_section=".app.rodata" />
     </folder>
     <folder Name="Boot" exclude="" filter="" path="Boot" recurse="Yes">
-      <configuration Name="Common" default_code_section=".boot.text" default_const_section=".boot.rodata" default_data_section=".boot.data" />
+      <configuration
+        Name="Common"
+        default_code_section=".boot.text"
+        default_const_section=".boot.rodata"
+        default_data_section=".boot.data" />
+    </folder>
+    <folder
+      Name="guix"
+      exclude="samples;tutorials"
+      filter=""
+      path="guix"
+      recurse="Yes">
+      <configuration
+        Name="Common"
+        default_code_section=".driver.text"
+        default_const_section=".driver.rodata"
+        unity_build_exclude_filter="guix/samples;guix/tutorials" />
     </folder>
   </project>
-  <configuration Name="Debug" c_preprocessor_definitions="" gcc_debugging_level="Level 3" gcc_optimization_level="None" />
-  <configuration Name="Release" c_preprocessor_definitions="NDEBUG" gcc_debugging_level="Level 2" gcc_omit_frame_pointer="Yes" gcc_optimization_level="Level 2 balanced" />
+  <configuration
+    Name="Debug"
+    c_preprocessor_definitions=""
+    gcc_debugging_level="Level 3"
+    gcc_optimization_level="None" />
+  <configuration
+    Name="Release"
+    c_preprocessor_definitions="NDEBUG"
+    gcc_debugging_level="Level 2"
+    gcc_omit_frame_pointer="Yes"
+    gcc_optimization_level="Level 2 balanced" />
   <configuration Name="Common" arm_linker_variant="SEGGER" />
 </solution>

@@ -8,6 +8,7 @@
 #include "app_main.h"
 #include "tx_api.h"
 #include "safe_printf.h"
+#include "tracex.h"
 /*
 *********************************************************************************************************
 *                                 任务优先级，数值越小优先级越高
@@ -67,6 +68,8 @@ int appMain(void)
 {
     // 内核开启前关闭HAL的时间基
     HAL_SuspendTick();
+
+    TraceX_EnableTrace();
 
     // 进入ThreadX内核
     tx_kernel_enter();

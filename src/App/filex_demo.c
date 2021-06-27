@@ -4,14 +4,18 @@
 #include "mem_layout.h"
 #include "stm32h7xx_hal.h"
 
+#include "mem_layout.h"
+#include "../Drivers/common/inc/common/device.h"
+#include "../Drivers/common/inc/common/block.h"
+#include "bsp.h"
+#include "stdint.h"
+
 #ifdef FX_ENABLE_FAULT_TOLERANT
 #include "fx_fault_tolerant.h"
 #endif /* FX_ENABLE_FAULT_TOLERANT */
 
-#define DEMO_STACK_SIZE 10000
-
-/* Buffer for FileX FX_MEDIA sector cache. This must be large enough for at least one
-   sector, which are typically 512 bytes in size.  */
+extern SD_HandleTypeDef hsd1;
+SdDevice sdDevice;
 
 AXI_BUFFER unsigned char media_memory[512];
 
@@ -19,21 +23,15 @@ AXI_BUFFER unsigned char media_memory[512];
 UCHAR fault_tolerant_memory[FX_FAULT_TOLERANT_MAXIMUM_LOG_FILE_SIZE];
 #endif /* FX_ENABLE_FAULT_TOLERANT */
 
-/* Define RAM device driver entry.  */
-
-VOID _fx_ram_driver(FX_MEDIA *media_ptr);
-
 /* Define thread prototypes.  */
 
 /* Define FileX global data structures.  */
-
 FX_MEDIA sd_disk;
 FX_FILE my_file;
 
-uint8_t *thread2_stack[DEMO_STACK_SIZE];
-/* Define ThreadX global data structures.  */
-
 #ifndef FX_STANDALONE_ENABLE
+#define THREAD2_STACK_SIZE 10000
+uint8_t thread2_stack[THREAD2_STACK_SIZE];
 TX_THREAD thread_2;
 #endif
 ULONG thread_2_counter;
@@ -43,13 +41,10 @@ ULONG thread_2_counter;
 #ifndef FX_STANDALONE_ENABLE
 void fx_application_define()
 {
-    CHAR *pointer;
-    /* Put system definition stuff in here, e.g. thread creates and other assorted
-       create information.  */
-
+    sd_device_create(&sdDevice, &hsd1, 0);
     /* Create the main thread.  */
     tx_thread_create(&thread_2, "thread 2", thread_2_entry, 0,
-                     thread2_stack, DEMO_STACK_SIZE,
+                     thread2_stack, THREAD2_STACK_SIZE,
                      1, 1, TX_NO_TIME_SLICE, TX_AUTO_START);
 
     /* Initialize FileX.  */
@@ -57,8 +52,6 @@ void fx_application_define()
 }
 
 #endif
-
-extern SdDevice sdDevice;
 
 void thread_2_entry(ULONG thread_input)
 {
@@ -70,9 +63,9 @@ void thread_2_entry(ULONG thread_input)
     /* Format the RAM disk - the memory for the RAM disk was setup in
        tx_application_define above.  */
 #ifdef FX_ENABLE_EXFAT
-    status = fx_media_exFAT_format(&ram_disk,
-                                   _fx_ram_driver,       // Driver entry
-                                   ram_disk_memory,      // RAM disk memory pointer
+    status = fx_media_exFAT_format(&sd_disk,
+                                   fx_sd_driver,         // Driver entry
+                                   &sdDevice,            // RAM disk memory pointer
                                    media_memory,         // Media buffer pointer
                                    sizeof(media_memory), // Media buffer size
                                    "MY_RAM_DISK",        // Volume Name
@@ -84,6 +77,7 @@ void thread_2_entry(ULONG thread_input)
                                    12345,                // Volume ID
                                    1);                   // Boundary unit
 #else
+    uint32_t blockNbr = ((SD_HandleTypeDef *)(sdDevice.base.instance))->SdCard.BlockNbr;
     status = fx_media_format(&sd_disk,
                              fx_sd_driver,         // Driver entry
                              &sdDevice,            // RAM disk memory pointer
@@ -91,9 +85,9 @@ void thread_2_entry(ULONG thread_input)
                              sizeof(media_memory), // Media buffer size
                              "SD1",                // Volume Name
                              1,                    // Number of FATs
-                             0x1000,                    // Directory Entries
+                             0x1000,               // Directory Entries
                              0,                    // Hidden sectors
-                             0x100000,               // Total sectors
+                             blockNbr,             // Total sectors
                              512,                  // Sector size
                              1,                    // Sectors per cluster
                              1,                    // Heads
@@ -117,7 +111,7 @@ void thread_2_entry(ULONG thread_input)
         }
 
 #ifdef FX_ENABLE_FAULT_TOLERANT
-        status = fx_fault_tolerant_enable(&ram_disk, fault_tolerant_memory, sizeof(fault_tolerant_memory));
+        status = fx_fault_tolerant_enable(&sd_disk, fault_tolerant_memory, sizeof(fault_tolerant_memory));
 
         if (status != FX_SUCCESS)
         {
