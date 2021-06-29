@@ -15,7 +15,7 @@ static RAM2_BUFFER SpiWithPinsDevice spi4pDev;
 static RAM2_BUFFER CommandSpi st7735_cmd;
 #define ST7735_BUFFER_SIZE 160 * 80 * 2
 static RAM2_BUFFER uint8_t st7735Buffer[ST7735_BUFFER_SIZE];
-RAM2_BUFFER ST77XX st7735;
+static RAM2_BUFFER ST77XX st7735;
 
 #define THREAD0_STACK_SIZE 4096
 static uint8_t thread0_stack[THREAD0_STACK_SIZE];
@@ -46,10 +46,10 @@ static void test05()
     uint16_t color1 = 0x001F;
     uint16_t color2 = 0xF800;
     uint16_t color3 = 0x04F1;
-    st7735_rect_fill(&st7735, 0, 0, st7735.width, st7735.height, color0); //inv:1=red; inv:0=yellow
-    st7735_hline_draw(&st7735, 10, 10, 20, color1);                       //inv:1=red+green; inv:0=sky+pink
-    st7735_rect_fill(&st7735, 20, 20, 30, 30, color2);                    //inv:1=blue; inv:0=sky
-    st7735_rect_fill(&st7735, 40, 20, 50, 50, color3);                    //inv:1=red; inv:0=yellow
+    // st7735_rect_fill(&st7735, 0, 0, st7735.width, st7735.height, color0); //inv:1=red; inv:0=yellow
+    // st7735_hline_draw(&st7735, 10, 10, 20, color1);                       //inv:1=red+green; inv:0=sky+pink
+    // st7735_rect_fill(&st7735, 20, 20, 30, 30, color2);                    //inv:1=blue; inv:0=sky
+    // st7735_rect_fill(&st7735, 40, 20, 50, 50, color3);                    //inv:1=red; inv:0=yellow
 }
 
 static void thread_0_entry(ULONG thread_input)
@@ -84,7 +84,7 @@ void st77xx_demo()
     spi_with_pins_device_create(&spi4pDev, &spi4Dev, NULL, NULL, &dcPin);
     command_spi_create(&st7735_cmd, &spi4pDev);
     Buffer buf1 = {.data = st7735Buffer, .size = ST7735_BUFFER_SIZE};
-    st7735_create(&st7735, (Command *)&st7735_cmd, buf1);
+    st7735_create(&st7735, (Command *)&st7735_cmd);
 
     /* Create the main thread.  */
     tx_thread_create(&thread_0, strdup("thread 0"), thread_0_entry, 0,

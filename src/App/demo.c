@@ -15,7 +15,7 @@
 void app_task_create(void *first_unused_memory)
 {
     
-    st77xx_demo();
+    //st77xx_demo();
 
     w25qxx_demo();
 

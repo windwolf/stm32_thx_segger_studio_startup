@@ -99,7 +99,7 @@ initialize by symbol __SEGGER_init_ctors    { block ctors };                    
 place in FLASH1                             { section .FLASH1, section .FLASH1.* };
 place in FLASH2                             { section .FLASH2, section .FLASH2.* };
 
-place in FLASH2                             { section .app^.*, section .driver^.*, block code_fx };
+place in FLASH2                             { section .app^.*, section .driver^.*, section .guix.*, block code_fx };
 
 //
 // FLASH Placement
