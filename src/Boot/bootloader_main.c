@@ -12,6 +12,7 @@
 
 #include "bootloader_qspi.h"
 #include "app_main.h"
+#include "common/packet_parser_test.h"
 
 //#include "../cmbBackTrace/cm_backtrace.h"
 
@@ -31,7 +32,7 @@ int main(void)
     HAL_MPU_Disable();
     //MPU_Config();
     /* MCU Configuration--------------------------------------------------------*/
-
+	packet_parser_test();
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
     //cm_backtrace_init("startup", "1.0", "0.1");

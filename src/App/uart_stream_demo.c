@@ -8,7 +8,7 @@
 extern UART_HandleTypeDef huart4;
 static RAM2_BUFFER UartDevice uartDevice;
 static RAM2_BUFFER uint8_t txBuf0[64];
-static RAM2_BUFFER uint8_t uartRxBuffer[65];
+static RAM2_BUFFER uint8_t uartRxBuffer[64];
 static RAM2_BUFFER RingBuffer uartRxRingBuffer;
 static RAM2_BUFFER Stream stream;
 
@@ -25,7 +25,7 @@ static void thread_4_entry(ULONG thread_input);
 
 void uart_stream_demo()
 {
-    ringbuffer_create(&uartRxRingBuffer, uartRxBuffer, 65);
+    ringbuffer_create(&uartRxRingBuffer, uartRxBuffer, 1, 64);
     uart_device_create(&uartDevice, &huart4, 0);
     stream_create(&stream, &uartDevice, &uartRxRingBuffer);
     stream_server_start(&stream);
@@ -49,8 +49,9 @@ static void thread_4_entry(ULONG thread_input)
         uint32_t len = ringbuffer_count_get(&uartRxRingBuffer);
         if (len > 0)
         {
-            ringbuffer_read(&uartRxRingBuffer, txBuf0, len);
-            stream_send(&stream, txBuf0, len);
+			uint32_t actualLength = 0;
+            ringbuffer_read(&uartRxRingBuffer, txBuf0, len, &actualLength);
+            stream_send(&stream, txBuf0, actualLength);
             //w25qxx_write(&w25qxx_1, txBuf0, 0x0400, len);
             //w25qxx_read(&w25qxx_1, data_buf, 0x0400, len);
             tx_thread_sleep(10);
