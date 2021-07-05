@@ -8,7 +8,7 @@
 #include "st77xx_demo.h"
 #include "w25qxx_demo.h"
 #include "uart_stream_demo.h"
-#include "common/packet_parser_test.h"
+#include "common/message_parser_test.h"
 
 #define LOG_MODULE "demo"
 #include "log.h"
@@ -18,7 +18,7 @@ void app_task_create(void *first_unused_memory)
 
     //st77xx_demo();
 
-    packet_parser_test();
+    message_parser_test();
 
     w25qxx_demo();
 
