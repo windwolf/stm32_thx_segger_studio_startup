@@ -1,3 +1,6 @@
 [submodule "src/Drivers"]
 	path = src/Drivers
 	url = https://github.com/windwolf/driver_collection.git
+[submodule "src/guix"]
+	path = src/guix
+	url = https://github.com/azure-rtos/guix.git
