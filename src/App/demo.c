@@ -9,6 +9,7 @@
 #include "w25qxx_demo.h"
 #include "uart_stream_demo.h"
 #include "common/message_parser_test.h"
+#include "gps_demo.h"
 
 #define LOG_MODULE "demo"
 #include "log.h"
@@ -27,6 +28,8 @@ void app_task_create(void *first_unused_memory)
     fx_application_define();
 
     guix_demo_application_define();
+
+    gps_application_define();
 }
 
 /* Define the test threads.  */
