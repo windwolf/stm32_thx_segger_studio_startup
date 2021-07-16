@@ -4,3 +4,6 @@
 [submodule "src/guix"]
 	path = src/guix
 	url = https://github.com/azure-rtos/guix.git
+[submodule "src/Components/communication_protocol"]
+	path = src/Components/communication_protocol
+	url = https://github.com/windwolf/communication_protocol.git
