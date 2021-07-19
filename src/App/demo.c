@@ -8,7 +8,7 @@
 #include "st77xx_demo.h"
 #include "w25qxx_demo.h"
 #include "uart_stream_demo.h"
-#include "common/message_parser_test.h"
+#include "communication_protocol/inc/message_parser_test.h"
 #include "gps_demo.h"
 
 #define LOG_MODULE "demo"

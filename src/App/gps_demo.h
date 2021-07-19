@@ -6,7 +6,7 @@ extern "C"
 {
 #endif
 
-#include "gnss_protocol/inc/nmea.h"
+#include "communication_protocol/inc/nmea.h"
 #include "tx_api.h"
 
     void thread_gps_entry(ULONG thread_input);

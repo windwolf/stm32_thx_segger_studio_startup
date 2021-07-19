@@ -12,7 +12,7 @@
 
 #include "bootloader_qspi.h"
 #include "app_main.h"
-#include "common/message_parser_test.h"
+#include "unit_test.h"
 
 //#include "../cmbBackTrace/cm_backtrace.h"
 
@@ -32,7 +32,7 @@ int main(void)
     HAL_MPU_Disable();
     //MPU_Config();
     /* MCU Configuration--------------------------------------------------------*/
-	message_parser_test();
+    test_before_hal_init();
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
     //cm_backtrace_init("startup", "1.0", "0.1");
@@ -62,6 +62,9 @@ int main(void)
     MX_USB_OTG_FS_PCD_Init();
     MX_UART4_Init();
     /* USER CODE BEGIN 2 */
+
+    test_after_hal_init();
+
     appMain();
     /* USER CODE END 2 */
 

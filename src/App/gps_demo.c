@@ -5,8 +5,8 @@
 #include "bsp.h"
 #include "stdint.h"
 #include "tx_api.h"
-#include "common/message_parser.h"
-#include "gnss_protocol/inc/nmea.h"
+#include "communication_protocol/inc/message_parser.h"
+#include "communication_protocol/inc/nmea.h"
 #include "shared.h"
 
 extern UART_HandleTypeDef huart4;
