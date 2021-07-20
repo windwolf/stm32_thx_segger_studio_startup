@@ -7,3 +7,6 @@
 [submodule "src/Components/communication_protocol"]
 	path = src/Components/communication_protocol
 	url = https://github.com/windwolf/communication_protocol.git
+[submodule "src/Components/algorithm"]
+	path = src/Components/algorithm
+	url = https://github.com/windwolf/algorithm.git

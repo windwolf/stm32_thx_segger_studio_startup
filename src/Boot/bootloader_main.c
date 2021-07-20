@@ -30,9 +30,11 @@ int main(void)
     /* Enable D-Cache---------------------------------------------------------*/
     SCB_EnableDCache();
     HAL_MPU_Disable();
-    //MPU_Config();
+    MPU_Config();
     /* MCU Configuration--------------------------------------------------------*/
+#ifdef UNITTEST
     test_before_hal_init();
+#endif
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
     //cm_backtrace_init("startup", "1.0", "0.1");
@@ -62,9 +64,9 @@ int main(void)
     MX_USB_OTG_FS_PCD_Init();
     MX_UART4_Init();
     /* USER CODE BEGIN 2 */
-
+#ifdef UNITTEST
     test_after_hal_init();
-
+#endif
     appMain();
     /* USER CODE END 2 */
 

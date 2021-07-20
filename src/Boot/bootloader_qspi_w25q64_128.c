@@ -1,3 +1,5 @@
+#ifdef QSPI_LOADER_W25Q64 || QSPI_LOADER_W25Q128
+
 #include "bootloader_qspi.h"
 #include "stdint.h"
 #include "stm32h7xx_hal.h"
@@ -296,3 +298,5 @@ static HAL_StatusTypeDef bootloader_qspi_ddr_mm(QSPI_CommandTypeDef *cmd)
 
     return HAL_QSPI_MemoryMapped(&hqspi, cmd, &mmCfg);
 };
+
+#endif
