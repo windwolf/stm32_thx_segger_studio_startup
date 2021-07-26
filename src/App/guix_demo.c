@@ -75,7 +75,7 @@ static void guix_demo_worker()
 
     gx_studio_display_configure(MAIN_DISPLAY, &st7735_graphics_driver_rgb565_setup,
                                 LANGUAGE_ENGLISH, MAIN_DISPLAY_THEME_1, &root_window);
-    gx_canvas_memory_define(root_window->gx_window_root_canvas, display_memory, DISPLAY_MEMORY_SIZE);
+    gx_canvas_memory_define(root_window->gx_window_root_canvas, (GX_COLOR*)display_memory, DISPLAY_MEMORY_SIZE);
     gx_studio_named_widget_create("window", (GX_WIDGET *)root_window, GX_NULL);
 
     /* Show the root window to make it visible. */

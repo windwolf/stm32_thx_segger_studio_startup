@@ -10,6 +10,8 @@ extern "C"
 
     void app_task_create(void);
 
+    int appMain(void);
+
 #ifdef __cplusplus
 }
 #endif

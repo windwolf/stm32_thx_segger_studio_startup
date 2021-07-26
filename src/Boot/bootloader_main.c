@@ -17,6 +17,7 @@
 //#include "../cmbBackTrace/cm_backtrace.h"
 
 extern void MPU_Config(void);
+extern void SystemClock_Config();
 
 int main(void)
 {
