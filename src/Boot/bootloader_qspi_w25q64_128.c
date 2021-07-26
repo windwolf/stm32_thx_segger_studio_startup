@@ -1,4 +1,4 @@
-#ifdef QSPI_LOADER_W25Q64 || QSPI_LOADER_W25Q128
+#if defined(QSPI_LOADER_W25Q64) || defined(QSPI_LOADER_W25Q128)
 
 #include "bootloader_qspi.h"
 #include "stdint.h"
@@ -46,7 +46,6 @@ void bootloader_qspi_startup()
 {
     QSPI_CommandTypeDef mmCmd = {0};
     HAL_StatusTypeDef rst;
-    MX_QUADSPI_Init();
 
     mmCmd.AddressMode = QSPI_ADDRESS_NONE;
     mmCmd.Address = 0;
@@ -275,7 +274,7 @@ static HAL_StatusTypeDef bootloader_qspi_ddr_mm(QSPI_CommandTypeDef *cmd)
     QSPI_MemoryMappedTypeDef mmCfg = {0};
 
     cmd->InstructionMode = QSPI_INSTRUCTION_1_LINE;
-    cmd->Instruction = 0xED;
+    cmd->Instruction = (uint32_t)0xED;
 
     cmd->AddressMode = QSPI_ADDRESS_4_LINES;
     cmd->AddressSize = QSPI_ADDRESS_24_BITS;

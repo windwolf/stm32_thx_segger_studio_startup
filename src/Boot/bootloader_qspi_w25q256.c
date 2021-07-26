@@ -1,4 +1,4 @@
-#ifdef QSPI_LOADER_W25Q256
+#if defined(QSPI_LOADER_W25Q256)
 
 #include "bootloader_qspi.h"
 #include "stdint.h"
@@ -50,7 +50,6 @@ void bootloader_qspi_startup()
 {
     QSPI_CommandTypeDef mmCmd = {0};
     HAL_StatusTypeDef rst;
-    MX_QUADSPI_Init();
 
     mmCmd.AddressMode = QSPI_ADDRESS_NONE;
     mmCmd.Address = 0;
