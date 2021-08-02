@@ -21,7 +21,7 @@ typedef struct
 
 void test_before_hal_init()
 {
-	printf("sizeof(A):%d", sizeof(A));
+	//printf("sizeof(A):%d", sizeof(A));
 	//printf("sizeof(B):%d", sizeof(B));
 	message_parser_test();
 	tree_accessor_test();
