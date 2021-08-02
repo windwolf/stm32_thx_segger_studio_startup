@@ -10,3 +10,6 @@
 [submodule "src/Components/algorithm"]
 	path = src/Components/algorithm
 	url = https://github.com/windwolf/algorithm.git
+[submodule "src/Components/console"]
+	path = src/Components/console
+	url = https://github.com/windwolf/console.git
