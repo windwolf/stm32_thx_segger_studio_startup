@@ -184,10 +184,10 @@
     x2 = (a2 - c2 x3) / b2
 
     */
-    int i,j,k,n;
+    int i,j,k,n,m;
 
     n = dst->numRows;
-
+    m = dst->numCols;
     float16_t *pX = dst->pData;
     float16_t *pLT = lt->pData;
     float16_t *pA = a->pData;
@@ -195,7 +195,7 @@
     float16_t *lt_row;
     float16_t *a_col;
 
-    for(j=0; j < n; j ++)
+    for(j=0; j < m; j ++)
     {
        a_col = &pA[j];
 
@@ -203,11 +203,11 @@
        {
             lt_row = &pLT[n*i];
 
-            float16_t tmp=a_col[i * n];
+            float16_t tmp=a_col[i * m];
             
             for(k=0; k < i; k++)
             {
-                tmp -= lt_row[k] * pX[n*k+j];
+                tmp -= lt_row[k] * pX[m*k+j];
             }
 
             if (lt_row[i]==0.0f)
@@ -215,7 +215,7 @@
               return(ARM_MATH_SINGULAR);
             }
             tmp = tmp / lt_row[i];
-            pX[i*n+j] = tmp;
+            pX[i*m+j] = tmp;
        }
 
     }

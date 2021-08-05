@@ -95,7 +95,7 @@ arm_status arm_mat_solve_lower_triangular_f32(
     f32x4_t vecA;
     f32x4_t vecX;
 
-    for (i = 0; i < m; i++)
+    for (i = 0; i < n; i++)
     {
 
       for (j = 0; j + 3 < n; j += 4)
