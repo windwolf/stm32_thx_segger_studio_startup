@@ -3,6 +3,7 @@
   <project Name="startup">
     <configuration
       CMSIS_CORE="Yes"
+      CMSIS_DSP="Cortex-M7 Little Endian With FPU"
       LIBRARY_IO_TYPE="RTT"
       Name="Common"
       Target="STM32H750VBTx"
@@ -24,7 +25,7 @@
       arm_target_device_name="STM32H750VB"
       arm_target_interface_type="SWD"
       c_preprocessor_definitions="CORE_CM7;__VTOR_CONFIG;STM32H750xx;__STM32H7xx_FAMILY;__STM32H750_SUBFAMILY;ARM_MATH_CM7;TX_INCLUDE_USER_DEFINE_FILE;FX_INCLUDE_USER_DEFINE_FILE;GX_INCLUDE_USER_DEFINE_FILE;USE_FULL_LL_DRIVER;USE_HAL_DRIVER;__VECTORS_IN_RAM;DATA_IN_D2_SRAM;SEGGER_FAULT_HANDLER;QSPI_LOADER_W25Q64;ARM_MATH_CM7;__FPU_PRESENT"
-      c_user_include_directories="$(ProjectDir)/CMSIS_5/CMSIS/Core/Include;$(PackagesDir)/CMSIS_5/CMSIS/DSP/Include;$(ProjectDir)/STM32H7xx/CMSIS/Device/Include;$(ProjectDir)/CubeMx/Core/Inc;$(ProjectDir)/CubeMx/FileX/App;$(ProjectDir)/CubeMx/FileX/Target;$(ProjectDir)/CubeMx/LevelX/App;$(ProjectDir)/CubeMx/LevelX/Target;$(ProjectDir)/CubeMx/Drivers/STM32H7xx_HAL_Driver/Inc;$(ProjectDir)/CubeMx/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;$(ProjectDir)/CubeMx/Middlewares/ST/filex/Common/inc;$(ProjectDir)/CubeMx/Middlewares/ST/filex/ports/generic/inc;$(ProjectDir)/CubeMx/Middlewares/ST/threadx/common/inc;$(ProjectDir)/CubeMx/Middlewares/ST/threadx/ports/cortex_m7/gnu/inc;$(ProjectDir)/Drivers/common/inc;$(ProjectDir)/Drivers/bsp/stm32h750/inc;$(ProjectDir)/Drivers/device/inc;$(ProjectDir)/Drivers/driver/inc;$(ProjectDir)/Drivers/os/inc;$(ProjectDir)/Drivers/test;${ProjectDir}/cmbBackTrace;$(ProjectDir)/App;$(ProjectDir)/Boot;$(ProjectDir)/test;$(ProjectDir)/Components;$(ProjectDir)/guix/common/inc;$(ProjectDir)/guix/ports/cortex_m7/gnu/inc;$(ProjectDir)/guix_studio"
+      c_user_include_directories="$(ProjectDir)/CMSIS_5/CMSIS/Core/Include;$(PackagesDir)/CMSIS_5/CMSIS/DSP/Include;$(ProjectDir)/CMSIS_5/CMSIS/DSP/Include;$(ProjectDir)/STM32H7xx/CMSIS/Device/Include;$(ProjectDir)/CubeMx/Core/Inc;$(ProjectDir)/CubeMx/FileX/App;$(ProjectDir)/CubeMx/FileX/Target;$(ProjectDir)/CubeMx/LevelX/App;$(ProjectDir)/CubeMx/LevelX/Target;$(ProjectDir)/CubeMx/Drivers/STM32H7xx_HAL_Driver/Inc;$(ProjectDir)/CubeMx/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;$(ProjectDir)/CubeMx/Middlewares/ST/filex/Common/inc;$(ProjectDir)/CubeMx/Middlewares/ST/filex/ports/generic/inc;$(ProjectDir)/CubeMx/Middlewares/ST/threadx/common/inc;$(ProjectDir)/CubeMx/Middlewares/ST/threadx/ports/cortex_m7/gnu/inc;$(ProjectDir)/Drivers/common/inc;$(ProjectDir)/Drivers/bsp/stm32h750/inc;$(ProjectDir)/Drivers/device/inc;$(ProjectDir)/Drivers/driver/inc;$(ProjectDir)/Drivers/os/inc;$(ProjectDir)/Drivers/test;${ProjectDir}/cmbBackTrace;$(ProjectDir)/App;$(ProjectDir)/Boot;$(ProjectDir)/test;$(ProjectDir)/Components;$(ProjectDir)/guix/common/inc;$(ProjectDir)/guix/ports/cortex_m7/gnu/inc;$(ProjectDir)/guix_studio"
       debug_register_definition_file="$(ProjectDir)/STM32H750x_Registers.xml"
       debug_stack_pointer_start="__stack_end__"
       debug_target_connection="J-Link"
@@ -36,7 +37,9 @@
       link_linker_script_file="$(ProjectDir)/STM32H7xx_Flash_Variant4.icf"
       linker_additional_files="$(PackagesDir)/CMSIS_5/CMSIS/Lib/CrossWorks/arm_cortex_math$(LibExt)$(LIB)"
       linker_memory_map_file="$(ProjectDir)/STM32H750VBTx_MemoryMap.xml"
+      linker_printf_fp_enabled="Float"
       linker_printf_width_precision_supported="Yes"
+      linker_scanf_fp_enabled="Yes"
       macros="DeviceHeaderFile=$(PackagesDir)/STM32H7xx/CMSIS/Device/Include/stm32h7xx.h;DeviceLibraryIdentifier=M7lfdp;DeviceSystemFile=$(PackagesDir)/STM32H7xx/CMSIS/Device/Source/Templates/system_stm32h7xx.c;DeviceVectorsFile=$(PackagesDir)/STM32H7xx/Source/STM32H750x_Vectors.s;DeviceFamily=STM32H7xx;DeviceSubFamily=STM32H750;Target=STM32H750VBTx"
       project_directory=""
       project_type="Executable"
@@ -44,6 +47,12 @@
       target_trace_initialize_script="EnableTrace(&quot;$(TraceInterfaceType)&quot;)" />
     <folder Name="CMSIS Files">
       <file file_name="STM32H7xx/CMSIS/Device/Include/stm32h7xx.h" />
+      <folder
+        Name="DSP"
+        exclude=""
+        filter=""
+        path="CMSIS_5/CMSIS/DSP"
+        recurse="Yes" />
     </folder>
     <folder Name="Script Files">
       <file file_name="STM32H7xx/Scripts/STM32H7xx_Target.js">
