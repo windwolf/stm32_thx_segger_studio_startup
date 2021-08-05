@@ -32,14 +32,12 @@
   @ingroup groupMatrix
  */
 
-
 /**
   @addtogroup MatrixInv
   @{
  */
 
-
-   /**
+/**
    * @brief Solve LT . X = A where LT is a lower triangular matrix
    * @param[in]  lt  The lower triangular matrix
    * @param[in]  a  The matrix a
@@ -51,20 +49,19 @@
 
 #include "arm_helium_utils.h"
 
-  arm_status arm_mat_solve_lower_triangular_f32(
-  const arm_matrix_instance_f32 * lt,
-  const arm_matrix_instance_f32 * a,
-  arm_matrix_instance_f32 * dst)
-  {
-  arm_status status;                             /* status of matrix inverse */
-
+arm_status arm_mat_solve_lower_triangular_f32(
+    const arm_matrix_instance_f32 *lt,
+    const arm_matrix_instance_f32 *a,
+    arm_matrix_instance_f32 *dst)
+{
+  arm_status status; /* status of matrix inverse */
 
 #ifdef ARM_MATH_MATRIX_CHECK
 
   /* Check for matrix mismatch condition */
   if ((lt->numRows != lt->numCols) ||
       (a->numRows != a->numCols) ||
-      (lt->numRows != a->numRows)   )
+      (lt->numRows != a->numRows))
   {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
     status = ARM_MATH_SIZE_MISMATCH;
@@ -82,7 +79,7 @@
     x2 = (a2 - c2 x3) / b2
 
     */
-    int i,j,k,n;
+    int i, j, k, n, m;
 
     n = dst->numRows;
 
@@ -98,53 +95,50 @@
     f32x4_t vecA;
     f32x4_t vecX;
 
-    for(i=0; i < n ; i++)
+    for (i = 0; i < m; i++)
     {
 
-      for(j=0; j+3 < n; j += 4)
+      for (j = 0; j + 3 < n; j += 4)
       {
-            vecA = vld1q_f32(&pA[i * n + j]);
+        vecA = vld1q_f32(&pA[i * n + j]);
 
-            for(k=0; k < i; k++)
-            {
-                vecX = vld1q_f32(&pX[n*k+j]);
-                vecA = vfmsq(vecA,vdupq_n_f32(pLT[n*i + k]),vecX);
-            }
-
-            if (pLT[n*i + i]==0.0f)
-            {
-              return(ARM_MATH_SINGULAR);
-            }
-
-            invLT = 1.0f / pLT[n*i + i];
-            vecA = vmulq(vecA,vdupq_n_f32(invLT));
-            vst1q(&pX[i*n+j],vecA);
-
-       }
-
-       for(; j < n; j ++)
-       {
-            a_col = &pA[j];
-            lt_row = &pLT[n*i];
-
-            float32_t tmp=a_col[i * n];
-            
-            for(k=0; k < i; k++)
-            {
-                tmp -= lt_row[k] * pX[n*k+j];
-            }
-
-            if (lt_row[i]==0.0f)
-            {
-              return(ARM_MATH_SINGULAR);
-            }
-            tmp = tmp / lt_row[i];
-            pX[i*n+j] = tmp;
+        for (k = 0; k < i; k++)
+        {
+          vecX = vld1q_f32(&pX[n * k + j]);
+          vecA = vfmsq(vecA, vdupq_n_f32(pLT[n * i + k]), vecX);
         }
 
+        if (pLT[n * i + i] == 0.0f)
+        {
+          return (ARM_MATH_SINGULAR);
+        }
+
+        invLT = 1.0f / pLT[n * i + i];
+        vecA = vmulq(vecA, vdupq_n_f32(invLT));
+        vst1q(&pX[i * n + j], vecA);
+      }
+
+      for (; j < n; j++)
+      {
+        a_col = &pA[j];
+        lt_row = &pLT[n * i];
+
+        float32_t tmp = a_col[i * n];
+
+        for (k = 0; k < i; k++)
+        {
+          tmp -= lt_row[k] * pX[n * k + j];
+        }
+
+        if (lt_row[i] == 0.0f)
+        {
+          return (ARM_MATH_SINGULAR);
+        }
+        tmp = tmp / lt_row[i];
+        pX[i * n + j] = tmp;
+      }
     }
     status = ARM_MATH_SUCCESS;
-
   }
 
   /* Return to application */
@@ -152,20 +146,19 @@
 }
 #else
 #if defined(ARM_MATH_NEON) && !defined(ARM_MATH_AUTOVECTORIZE)
-  arm_status arm_mat_solve_lower_triangular_f32(
-  const arm_matrix_instance_f32 * lt,
-  const arm_matrix_instance_f32 * a,
-  arm_matrix_instance_f32 * dst)
-  {
-  arm_status status;                             /* status of matrix inverse */
-
+arm_status arm_mat_solve_lower_triangular_f32(
+    const arm_matrix_instance_f32 *lt,
+    const arm_matrix_instance_f32 *a,
+    arm_matrix_instance_f32 *dst)
+{
+  arm_status status; /* status of matrix inverse */
 
 #ifdef ARM_MATH_MATRIX_CHECK
 
   /* Check for matrix mismatch condition */
   if ((lt->numRows != lt->numCols) ||
       (a->numRows != a->numCols) ||
-      (lt->numRows != a->numRows)   )
+      (lt->numRows != a->numRows))
   {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
     status = ARM_MATH_SIZE_MISMATCH;
@@ -183,7 +176,7 @@
     x2 = (a2 - c2 x3) / b2
 
     */
-    int i,j,k,n;
+    int i, j, k, n;
 
     n = dst->numRows;
 
@@ -199,72 +192,68 @@
     f32x4_t vecA;
     f32x4_t vecX;
 
-    for(i=0; i < n ; i++)
+    for (i = 0; i < n; i++)
     {
 
-      for(j=0; j+3 < n; j += 4)
+      for (j = 0; j + 3 < n; j += 4)
       {
-            vecA = vld1q_f32(&pA[i * n + j]);
+        vecA = vld1q_f32(&pA[i * n + j]);
 
-            for(k=0; k < i; k++)
-            {
-                vecX = vld1q_f32(&pX[n*k+j]);
-                vecA = vfmsq_f32(vecA,vdupq_n_f32(pLT[n*i + k]),vecX);
-            }
-
-            if (pLT[n*i + i]==0.0f)
-            {
-              return(ARM_MATH_SINGULAR);
-            }
-
-            invLT = 1.0f / pLT[n*i + i];
-            vecA = vmulq_f32(vecA,vdupq_n_f32(invLT));
-            vst1q_f32(&pX[i*n+j],vecA);
-
-       }
-
-       for(; j < n; j ++)
-       {
-            a_col = &pA[j];
-            lt_row = &pLT[n*i];
-
-            float32_t tmp=a_col[i * n];
-            
-            for(k=0; k < i; k++)
-            {
-                tmp -= lt_row[k] * pX[n*k+j];
-            }
-
-            if (lt_row[i]==0.0f)
-            {
-              return(ARM_MATH_SINGULAR);
-            }
-            tmp = tmp / lt_row[i];
-            pX[i*n+j] = tmp;
+        for (k = 0; k < i; k++)
+        {
+          vecX = vld1q_f32(&pX[n * k + j]);
+          vecA = vfmsq_f32(vecA, vdupq_n_f32(pLT[n * i + k]), vecX);
         }
 
+        if (pLT[n * i + i] == 0.0f)
+        {
+          return (ARM_MATH_SINGULAR);
+        }
+
+        invLT = 1.0f / pLT[n * i + i];
+        vecA = vmulq_f32(vecA, vdupq_n_f32(invLT));
+        vst1q_f32(&pX[i * n + j], vecA);
+      }
+
+      for (; j < n; j++)
+      {
+        a_col = &pA[j];
+        lt_row = &pLT[n * i];
+
+        float32_t tmp = a_col[i * n];
+
+        for (k = 0; k < i; k++)
+        {
+          tmp -= lt_row[k] * pX[n * k + j];
+        }
+
+        if (lt_row[i] == 0.0f)
+        {
+          return (ARM_MATH_SINGULAR);
+        }
+        tmp = tmp / lt_row[i];
+        pX[i * n + j] = tmp;
+      }
     }
     status = ARM_MATH_SUCCESS;
-
   }
 
   /* Return to application */
   return (status);
 }
 #else
-  arm_status arm_mat_solve_lower_triangular_f32(
-  const arm_matrix_instance_f32 * lt,
-  const arm_matrix_instance_f32 * a,
-  arm_matrix_instance_f32 * dst)
-  {
-  arm_status status;                             /* status of matrix inverse */
-
+arm_status arm_mat_solve_lower_triangular_f32(
+    const arm_matrix_instance_f32 *lt,
+    const arm_matrix_instance_f32 *a,
+    arm_matrix_instance_f32 *dst)
+{
+  arm_status status; /* status of matrix inverse */
 
 #ifdef ARM_MATH_MATRIX_CHECK
   /* Check for matrix mismatch condition */
   if ((lt->numRows != lt->numCols) ||
       (a->numRows != a->numCols) ||
-      (lt->numRows != a->numRows)   )
+      (lt->numRows != a->numRows))
   {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
     status = ARM_MATH_SIZE_MISMATCH;
@@ -282,9 +271,10 @@
     x2 = (a2 - c2 x3) / b2
 
     */
-    int i,j,k,n;
+    int i, j, k, n, m;
 
     n = dst->numRows;
+    m = dst->numCols;
 
     float32_t *pX = dst->pData;
     float32_t *pLT = lt->pData;
@@ -293,32 +283,30 @@
     float32_t *lt_row;
     float32_t *a_col;
 
-    for(j=0; j < n; j ++)
+    for (j = 0; j < m; j++)
     {
-       a_col = &pA[j];
+      a_col = &pA[j];
 
-       for(i=0; i < n ; i++)
-       {
-            lt_row = &pLT[n*i];
+      for (i = 0; i < n; i++)
+      {
+        lt_row = &pLT[n * i];
 
-            float32_t tmp=a_col[i * n];
-            
-            for(k=0; k < i; k++)
-            {
-                tmp -= lt_row[k] * pX[n*k+j];
-            }
+        float32_t tmp = a_col[i * m];
 
-            if (lt_row[i]==0.0f)
-            {
-              return(ARM_MATH_SINGULAR);
-            }
-            tmp = tmp / lt_row[i];
-            pX[i*n+j] = tmp;
-       }
+        for (k = 0; k < i; k++)
+        {
+          tmp -= lt_row[k] * pX[m * k + j];
+        }
 
+        if (lt_row[i] == 0.0f)
+        {
+          return (ARM_MATH_SINGULAR);
+        }
+        tmp = tmp / lt_row[i];
+        pX[i * m + j] = tmp;
+      }
     }
     status = ARM_MATH_SUCCESS;
-
   }
 
   /* Return to application */
