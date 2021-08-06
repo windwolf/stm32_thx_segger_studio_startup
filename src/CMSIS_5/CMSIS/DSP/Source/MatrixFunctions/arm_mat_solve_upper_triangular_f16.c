@@ -26,16 +26,13 @@
  * limitations under the License.
  */
 
-
 #include "dsp/ww_matrix_functions_f16.h"
 
 #if defined(ARM_FLOAT16_SUPPORTED)
 
-
 /**
   @ingroup groupMatrix
  */
-
 
 /**
   @addtogroup MatrixInv
@@ -54,20 +51,19 @@
 
 #include "arm_helium_utils.h"
 
-  arm_status arm_mat_solve_upper_triangular_f16(
-  const arm_matrix_instance_f16 * ut,
-  const arm_matrix_instance_f16 * a,
-  arm_matrix_instance_f16 * dst)
-  {
-arm_status status;                             /* status of matrix inverse */
-
+arm_status arm_mat_solve_upper_triangular_f16(
+    const arm_matrix_instance_f16 *ut,
+    const arm_matrix_instance_f16 *a,
+    arm_matrix_instance_f16 *dst)
+{
+  arm_status status; /* status of matrix inverse */
 
 #ifdef ARM_MATH_MATRIX_CHECK
 
   /* Check for matrix mismatch condition */
   if ((ut->numRows != ut->numCols) ||
       (a->numRows != a->numCols) ||
-      (ut->numRows != a->numRows)   )
+      (ut->numRows != a->numRows))
   {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
     status = ARM_MATH_SIZE_MISMATCH;
@@ -78,7 +74,7 @@ arm_status status;                             /* status of matrix inverse */
 
   {
 
-    int i,j,k,n;
+    int i, j, k, n;
 
     n = dst->numRows;
 
@@ -93,77 +89,73 @@ arm_status status;                             /* status of matrix inverse */
 
     f16x8_t vecA;
     f16x8_t vecX;
-    
-    for(i=n-1; i >= 0 ; i--)
+
+    for (i = n - 1; i >= 0; i--)
     {
-      for(j=0; j+7 < n; j +=8)
+      for (j = 0; j + 7 < n; j += 8)
       {
-            vecA = vld1q_f16(&pA[i * n + j]);
-            
-            for(k=n-1; k > i; k--)
-            {
-                vecX = vld1q_f16(&pX[n*k+j]);          
-                vecA = vfmsq(vecA,vdupq_n_f16(pUT[n*i + k]),vecX);
-            }
+        vecA = vld1q_f16(&pA[i * n + j]);
 
-            if (pUT[n*i + i]==0.0f16)
-            {
-              return(ARM_MATH_SINGULAR);
-            }
+        for (k = n - 1; k > i; k--)
+        {
+          vecX = vld1q_f16(&pX[n * k + j]);
+          vecA = vfmsq(vecA, vdupq_n_f16(pUT[n * i + k]), vecX);
+        }
 
-            invUT = 1.0f16 / (_Float16)pUT[n*i + i];
-            vecA = vmulq(vecA,vdupq_n_f16(invUT));
-           
+        if (pUT[n * i + i] == 0.0f16)
+        {
+          return (ARM_MATH_SINGULAR);
+        }
 
-            vst1q(&pX[i*n+j],vecA);
+        invUT = 1.0f16 / (_Float16)pUT[n * i + i];
+        vecA = vmulq(vecA, vdupq_n_f16(invUT));
+
+        vst1q(&pX[i * n + j], vecA);
       }
 
-      for(; j < n; j ++)
+      for (; j < n; j++)
       {
-            a_col = &pA[j];
+        a_col = &pA[j];
 
-            ut_row = &pUT[n*i];
+        ut_row = &pUT[n * i];
 
-            _Float16 tmp=a_col[i * n];
-            
-            for(k=n-1; k > i; k--)
-            {
-                tmp -= (_Float16)ut_row[k] * (_Float16)pX[n*k+j];
-            }
+        _Float16 tmp = a_col[i * n];
 
-            if (ut_row[i]==0.0f16)
-            {
-              return(ARM_MATH_SINGULAR);
-            }
-            tmp = tmp / (_Float16)ut_row[i];
-            pX[i*n+j] = tmp;
-       }
+        for (k = n - 1; k > i; k--)
+        {
+          tmp -= (_Float16)ut_row[k] * (_Float16)pX[n * k + j];
+        }
 
+        if (ut_row[i] == 0.0f16)
+        {
+          return (ARM_MATH_SINGULAR);
+        }
+        tmp = tmp / (_Float16)ut_row[i];
+        pX[i * n + j] = tmp;
+      }
     }
     status = ARM_MATH_SUCCESS;
-
   }
 
-  
   /* Return to application */
   return (status);
 }
 
 #else
-  arm_status arm_mat_solve_upper_triangular_f16(
-  const arm_matrix_instance_f16 * ut,
-  const arm_matrix_instance_f16 * a,
-  arm_matrix_instance_f16 * dst)
-  {
-arm_status status;                             /* status of matrix inverse */
-
+arm_status arm_mat_solve_upper_triangular_f16(
+    const arm_matrix_instance_f16 *ut,
+    const arm_matrix_instance_f16 *a,
+    arm_matrix_instance_f16 *dst)
+{
+  arm_status status; /* status of matrix inverse */
 
 #ifdef ARM_MATH_MATRIX_CHECK
 
   /* Check for matrix mismatch condition */
-  if ((ut->numRows != ut->numCols) ||
-      (a->numRows != a->numCols) ||
-      (ut->numRows != a->numRows)   )
+  if ((lt->numRows != lt->numCols) ||
+      (lt->numCols != dst->numRows) ||
+      (dst->numCols != a->numCols) ||
+      (lt->numRows != a->numRows))
   {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
     status = ARM_MATH_SIZE_MISMATCH;
@@ -174,7 +166,7 @@ arm_status status;                             /* status of matrix inverse */
 
   {
 
-    int i,j,k,n,m;
+    int i, j, k, n, m;
 
     n = dst->numRows;
     m = dst->numCols;
@@ -185,35 +177,32 @@ arm_status status;                             /* status of matrix inverse */
     float16_t *ut_row;
     float16_t *a_col;
 
-    for(j=0; j < m; j ++)
+    for (j = 0; j < m; j++)
     {
-       a_col = &pA[j];
+      a_col = &pA[j];
 
-       for(i=n-1; i >= 0 ; i--)
-       {
-            ut_row = &pUT[n*i];
+      for (i = n - 1; i >= 0; i--)
+      {
+        ut_row = &pUT[n * i];
 
-            float16_t tmp=a_col[i * m];
-            
-            for(k=n-1; k > i; k--)
-            {
-                tmp -= ut_row[k] * pX[m*k+j];
-            }
+        float16_t tmp = a_col[i * m];
 
-            if (ut_row[i]==0.0f)
-            {
-              return(ARM_MATH_SINGULAR);
-            }
-            tmp = tmp / ut_row[i];
-            pX[i*m+j] = tmp;
-       }
+        for (k = n - 1; k > i; k--)
+        {
+          tmp -= ut_row[k] * pX[m * k + j];
+        }
 
+        if (ut_row[i] == 0.0f)
+        {
+          return (ARM_MATH_SINGULAR);
+        }
+        tmp = tmp / ut_row[i];
+        pX[i * m + j] = tmp;
+      }
     }
     status = ARM_MATH_SUCCESS;
-
   }
 
-  
   /* Return to application */
   return (status);
 }
@@ -223,4 +212,4 @@ arm_status status;                             /* status of matrix inverse */
 /**
   @} end of MatrixInv group
  */
-#endif /* #if defined(ARM_FLOAT16_SUPPORTED) */ 
+#endif /* #if defined(ARM_FLOAT16_SUPPORTED) */

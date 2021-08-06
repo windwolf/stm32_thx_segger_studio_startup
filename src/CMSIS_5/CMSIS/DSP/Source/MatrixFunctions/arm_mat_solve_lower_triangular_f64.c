@@ -32,34 +32,32 @@
   @ingroup groupMatrix
  */
 
-
 /**
   @addtogroup MatrixInv
   @{
  */
 
-
-   /**
+/**
    * @brief Solve LT . X = A where LT is a lower triangular matrix
    * @param[in]  lt  The lower triangular matrix
    * @param[in]  a  The matrix a
    * @param[out] dst The solution X of LT . X = A
    * @return The function returns ARM_MATH_SINGULAR, if the system can't be solved.
    */
-  arm_status arm_mat_solve_lower_triangular_f64(
-  const arm_matrix_instance_f64 * lt,
-  const arm_matrix_instance_f64 * a,
-  arm_matrix_instance_f64 * dst)
-  {
-  arm_status status;                             /* status of matrix inverse */
-
+arm_status arm_mat_solve_lower_triangular_f64(
+    const arm_matrix_instance_f64 *lt,
+    const arm_matrix_instance_f64 *a,
+    arm_matrix_instance_f64 *dst)
+{
+  arm_status status; /* status of matrix inverse */
 
 #ifdef ARM_MATH_MATRIX_CHECK
 
   /* Check for matrix mismatch condition */
   if ((lt->numRows != lt->numCols) ||
-      (a->numRows != a->numCols) ||
-      (lt->numRows != a->numRows)   )
+      (lt->numCols != dst->numRows) ||
+      (dst->numCols != a->numCols) ||
+      (lt->numRows != a->numRows))
   {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
     status = ARM_MATH_SIZE_MISMATCH;
@@ -77,7 +75,7 @@
     x2 = (a2 - c2 x3) / b2
 
     */
-    int i,j,k,n,m;
+    int i, j, k, n, m;
 
     n = dst->numRows;
     m = dst->numCols;
@@ -88,32 +86,30 @@
     float64_t *lt_row;
     float64_t *a_col;
 
-    for(j=0; j < m; j ++)
+    for (j = 0; j < m; j++)
     {
-       a_col = &pA[j];
+      a_col = &pA[j];
 
-       for(i=0; i < n ; i++)
-       {
-            lt_row = &pLT[n*i];
+      for (i = 0; i < n; i++)
+      {
+        lt_row = &pLT[n * i];
 
-            float64_t tmp=a_col[i * m];
-            
-            for(k=0; k < i; k++)
-            {
-                tmp -= lt_row[k] * pX[m*k+j];
-            }
+        float64_t tmp = a_col[i * m];
 
-            if (lt_row[i]==0.0f)
-            {
-              return(ARM_MATH_SINGULAR);
-            }
-            tmp = tmp / lt_row[i];
-            pX[i*m+j] = tmp;
-       }
+        for (k = 0; k < i; k++)
+        {
+          tmp -= lt_row[k] * pX[m * k + j];
+        }
 
+        if (lt_row[i] == 0.0f)
+        {
+          return (ARM_MATH_SINGULAR);
+        }
+        tmp = tmp / lt_row[i];
+        pX[i * m + j] = tmp;
+      }
     }
     status = ARM_MATH_SUCCESS;
-
   }
 
   /* Return to application */

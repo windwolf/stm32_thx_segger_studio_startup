@@ -252,7 +252,8 @@ arm_status arm_mat_solve_lower_triangular_f32(
 #ifdef ARM_MATH_MATRIX_CHECK
   /* Check for matrix mismatch condition */
   if ((lt->numRows != lt->numCols) ||
-      (a->numRows != a->numCols) ||
+      (lt->numCols != dst->numRows) ||
+      (dst->numCols != a->numCols) ||
       (lt->numRows != a->numRows))
   {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
