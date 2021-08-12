@@ -8,7 +8,6 @@
 #include "st77xx_demo.h"
 #include "w25qxx_demo.h"
 #include "uart_stream_demo.h"
-#include "communication_protocol/inc/message_parser_test.h"
 #include "gps_demo.h"
 #include "usb_storage_demo.h"
 
@@ -19,8 +18,6 @@ void app_task_create(void *first_unused_memory)
 {
 
     //st77xx_demo();
-
-    message_parser_test();
 
     w25qxx_demo();
 

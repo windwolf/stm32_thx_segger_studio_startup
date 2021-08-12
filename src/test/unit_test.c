@@ -10,22 +10,11 @@
 #include "log.h"
 #include "arm_math.h"
 
-typedef struct
-{
-	uint8_t a;
-	uint32_t b;
-} __attribute__((packed)) A;
-
-//typedef struct
-//{
-//	uint8_t a;
-//	uint32_t b;
-//} B __attribute__((packed));
+#ifdef UNITTEST
 
 void test_before_hal_init()
 {
-	//printf("sizeof(A):%d", sizeof(A));
-	//printf("sizeof(B):%d", sizeof(B));
+
 	kf_test();
 	message_parser_test();
 	tree_accessor_test();
@@ -34,3 +23,5 @@ void test_before_hal_init()
 void test_after_hal_init()
 {
 }
+
+#endif //UNITTEST
