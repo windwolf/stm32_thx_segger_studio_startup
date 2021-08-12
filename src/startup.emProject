@@ -74,7 +74,12 @@
         exclude=""
         filter=""
         path="cubemx/Core"
-        recurse="Yes" />
+        recurse="Yes">
+        <configuration
+          Name="Common"
+          default_code_section=".boot.text"
+          default_const_section=".boot.rodata" />
+      </folder>
       <folder
         Name="Hal"
         exclude="*template*"
@@ -83,6 +88,8 @@
         recurse="Yes">
         <configuration
           Name="Common"
+          default_code_section=".boot.text"
+          default_const_section=".boot.rodata"
           unity_build_exclude_filter="*template*" />
       </folder>
       <folder
@@ -90,13 +97,23 @@
         exclude=""
         filter=""
         path="cubemx/Middlewares"
-        recurse="Yes" />
+        recurse="Yes">
+        <configuration
+          Name="Common"
+          default_code_section=".app.text"
+          default_const_section=".app.rodata" />
+      </folder>
       <folder
         Name="FileX"
         exclude=""
         filter=""
         path="cubemx/FileX"
-        recurse="Yes" />
+        recurse="Yes">
+        <configuration
+          Name="Common"
+          default_code_section=".app.text"
+          default_const_section=".app.rodata" />
+      </folder>
       <configuration
         Name="Common"
         analyze_after_compile="No"
@@ -107,13 +124,23 @@
         exclude=""
         filter=""
         path="cubemx/LevelX"
-        recurse="Yes" />
+        recurse="Yes">
+        <configuration
+          Name="Common"
+          default_code_section=".app.text"
+          default_const_section=".app.rodata" />
+      </folder>
       <folder
         Name="USBX"
         exclude=""
         filter=""
         path="cubemx/USBX"
-        recurse="Yes" />
+        recurse="Yes">
+        <configuration
+          Name="Common"
+          default_code_section=".app.text"
+          default_const_section=".app.rodata" />
+      </folder>
     </folder>
     <configuration Name="Debug" c_preprocessor_definitions="DEBUG;UNITTEST" />
     <folder Name="App" exclude="" filter="" path="App" recurse="Yes">
@@ -140,6 +167,10 @@
         default_code_section=".guix.text"
         default_const_section=".guix.rodata"
         unity_build_exclude_filter="guix/samples;guix/tutorials" />
+      <configuration
+        Name="Debug"
+        default_code_section=".app.text"
+        default_const_section=".app.rodata" />
     </folder>
     <folder
       Name="Guix_studio"
@@ -149,8 +180,8 @@
       recurse="Yes">
       <configuration
         Name="Common"
-        default_code_section=".guix.text"
-        default_const_section=".guix.rodata" />
+        default_code_section=".app.text"
+        default_const_section=".app.rodata" />
     </folder>
     <folder
       Name="Drivers"
@@ -160,15 +191,20 @@
       recurse="Yes">
       <configuration
         Name="Common"
-        default_code_section=".driver.text"
-        default_const_section=".driver.rodata" />
+        default_code_section=".app.text"
+        default_const_section=".app.rodata" />
     </folder>
     <folder
       Name="Components"
       exclude=""
       filter=""
       path="Components"
-      recurse="Yes" />
+      recurse="Yes">
+      <configuration
+        Name="Common"
+        default_code_section=".app.text"
+        default_const_section=".app.rodata" />
+    </folder>
     <folder Name="test" exclude="" filter="" path="test" recurse="Yes" />
   </project>
   <configuration
