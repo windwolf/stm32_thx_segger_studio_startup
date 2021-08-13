@@ -21,6 +21,8 @@
       arm_linker_variant="SEGGER"
       arm_rtl_variant="SEGGER"
       arm_simulator_memory_simulation_parameter="RAM;0x00000000;0x00010000;ROM;0x08000000;0x00020000;RAM;0x20000000;0x00020000;RAM;0x24000000;0x00080000;RAM;0x30000000;0x00048000;RAM;0x38000000;0x00010000;RAM;0x38800000;0x00010000;ROM;0x90000000;0x00800000"
+      arm_simulator_memory_simulation_parameter_macros="DEBUG_SIM"
+      arm_simulator_stop_on_read_write="Stop On Read or Write Error"
       arm_target_debug_interface_type="ADIv5"
       arm_target_device_name="STM32H750VB"
       arm_target_interface_type="SWD"
@@ -74,6 +76,7 @@
       </file>
       <file file_name="STM32H7xx/Source/HardFaultHandler.S" />
       <file file_name="STM32H7xx/Source/SEGGER_HardFaultHandler.c" />
+      <file file_name="STM32H750VBTx_MemoryMap.xml" />
     </folder>
     <folder Name="CubeMx">
       <folder
@@ -152,7 +155,9 @@
     <configuration
       Name="Debug"
       c_preprocessor_definitions="DEBUG;UNITTEST"
-      link_map_file="Full" />
+      link_map_file="Full"
+      link_use_linker_script_file="No"
+      linker_section_placement_file="STM32H750VBTx_MemoryMap.xml" />
     <folder Name="App" exclude="" filter="" path="App" recurse="Yes">
       <configuration
         Name="Common"

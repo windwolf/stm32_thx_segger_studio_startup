@@ -9,6 +9,5 @@
   <MemorySegment name="RAM3" start="0x30040000" size="0x00008000" access="Read/Write" />
   <MemorySegment name="RAM4" start="0x38000000" size="0x00010000" access="Read/Write" />
   <MemorySegment name="Backup_RAM1" start="0x38800000" size="0x00001000" access="Read/Write" />
-
   <MemorySegment name="FLASH2" start="0x90000000" size="0x00800000" access="ReadOnly" />
 </root>
