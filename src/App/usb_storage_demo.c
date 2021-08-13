@@ -4,6 +4,7 @@
 #include "ux_system.h"
 #include "ux_utility.h"
 #include "ux_device_class_storage.h"
+#include "ux_device_class_cdc_acm.h"
 
 #include "ux_dcd_stm32.h"
 
@@ -16,8 +17,7 @@
 #include "usb_otg.h"
 
 /* Define USBX demo constants.  */
-
-#define UX_DEMO_STACK_SIZE 4096
+#define UX_DEMO_THREAD_STACK_SIZE (2048)
 #define UX_DEMO_MEMORY_SIZE (28 * 1024)
 
 /* Define the counters used in the demo application...  */
@@ -30,16 +30,17 @@ static UX_SLAVE_CLASS_STORAGE *storage_device;
 extern SD_HandleTypeDef hsd1;
 static SdDevice sdDevice;
 static Block sdBlock;
+static TX_THREAD ux_app_thread;
 
 BUFFER_DECLARE_STATIC(sdBlockBuffer, 1024);
-
-static ULONG ux_demo_memory_buffer[(UX_DEMO_MEMORY_SIZE + UX_DEMO_STACK_SIZE * 2) / sizeof(ULONG)];
+static uint8_t ux_demo_thread_stack_buffer[UX_DEMO_THREAD_STACK_SIZE];
+static ULONG ux_demo_memory_buffer[(UX_DEMO_MEMORY_SIZE) / sizeof(ULONG)];
 
 static void sd_init();
 static void usbd_init();
 static VOID tx_demo_instance_activate(VOID *dpump_instance);
 static VOID tx_demo_instance_deactivate(VOID *dpump_instance);
-
+static void usbx_app_thread_entry(ULONG arg);
 static VOID error_handler(void);
 static UINT sd_media_read(VOID *storage,
                           ULONG lun, UCHAR *data_pointer, ULONG number_blocks, ULONG lba,
@@ -47,7 +48,7 @@ static UINT sd_media_read(VOID *storage,
 static UINT sd_media_write(VOID *storage,
                            ULONG lun, UCHAR *data_pointer, ULONG number_blocks, ULONG lba,
                            ULONG *media_status);
-static ULONG sd_media_status(VOID *storage,
+static UINT sd_media_status(VOID *storage,
                              ULONG lun, ULONG media_id,
                              ULONG *media_status);
 
@@ -79,9 +80,9 @@ static UINT sd_media_write(VOID *storage,
     return UX_SUCCESS;
 };
 
-static ULONG sd_media_status(VOID *storage,
-                             ULONG lun, ULONG media_id,
-                             ULONG *media_status)
+static UINT sd_media_status(VOID *storage,
+                            ULONG lun, ULONG media_id,
+                            ULONG *media_status)
 {
     OP_RESULT status;
     status = sd_device_query_status(&sdDevice);
@@ -126,13 +127,11 @@ static void usbd_init()
 void usb_storage_demo()
 {
     sd_init();
-    CHAR *stack_pointer;
     CHAR *memory_pointer;
     UINT status;
     UX_SLAVE_CLASS_STORAGE_PARAMETER parameter;
 
-    stack_pointer = (CHAR *)ux_demo_memory_buffer;
-    memory_pointer = stack_pointer + (UX_DEMO_STACK_SIZE * 2);
+    memory_pointer = (CHAR *)ux_demo_memory_buffer;
 
     status = ux_system_initialize(memory_pointer, UX_DEMO_MEMORY_SIZE, UX_NULL, 0);
 
@@ -171,8 +170,8 @@ void usb_storage_demo()
     parameter.ux_slave_class_storage_parameter_vendor_id = USBD_MANUFACTURER_STRING;
 
     parameter.ux_slave_class_storage_parameter_number_lun = 1;
-    parameter.ux_slave_class_storage_parameter_lun[0].ux_slave_class_storage_media_last_lba = sdDevice.blockSize;
-    parameter.ux_slave_class_storage_parameter_lun[0].ux_slave_class_storage_media_block_length = sdDevice.blockNbr;
+    parameter.ux_slave_class_storage_parameter_lun[0].ux_slave_class_storage_media_last_lba = sdDevice.blockNbr - 1;
+    parameter.ux_slave_class_storage_parameter_lun[0].ux_slave_class_storage_media_block_length = sdDevice.blockSize;
     parameter.ux_slave_class_storage_parameter_lun[0].ux_slave_class_storage_media_type = 0;
     parameter.ux_slave_class_storage_parameter_lun[0].ux_slave_class_storage_media_removable_flag = 0x80;
     parameter.ux_slave_class_storage_parameter_lun[0].ux_slave_class_storage_media_read_only_flag = UX_FALSE;
@@ -196,17 +195,30 @@ void usb_storage_demo()
     if (status != UX_SUCCESS)
         error_handler();
 
+    status = tx_thread_create(&ux_app_thread, "main_usbx_app_thread_entry",
+                              usbx_app_thread_entry, 0,
+                              ux_demo_thread_stack_buffer, UX_DEMO_THREAD_STACK_SIZE,
+                              5, 5,
+                              TX_NO_TIME_SLICE, TX_AUTO_START);
+}
+
+static void usbx_app_thread_entry(ULONG arg)
+{
+    /* Sleep for 100 ms */
+    tx_thread_sleep(0.1 * TX_TIMER_TICKS_PER_SECOND);
+
+    /* Initialization of USB device */
     usbd_init();
 }
 
-VOID tx_demo_instance_activate(VOID *storage_instance)
+static VOID tx_demo_instance_activate(VOID *storage_instance)
 {
 
     /* Save the DPUMP instance.  */
     storage_device = (UX_SLAVE_CLASS_STORAGE *)storage_instance;
 }
 
-VOID tx_demo_instance_deactivate(VOID *storage_instance)
+static VOID tx_demo_instance_deactivate(VOID *storage_instance)
 {
 
     UX_PARAMETER_NOT_USED(storage_instance);
@@ -215,7 +227,7 @@ VOID tx_demo_instance_deactivate(VOID *storage_instance)
     storage_device = UX_NULL;
 }
 
-VOID error_handler(void)
+static VOID error_handler(void)
 {
 
     /* Increment error counter.  */

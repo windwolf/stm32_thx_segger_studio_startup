@@ -14,14 +14,20 @@
 
 void test_before_hal_init()
 {
-
+#ifdef DEBUG_SIM
 	kf_test();
 	message_parser_test();
 	tree_accessor_test();
+#endif //DEBUG_SIM
 }
 
 void test_after_hal_init()
 {
+#ifndef DEBUG_SIM
+	kf_test();
+	message_parser_test();
+	tree_accessor_test();
+#endif //DEBUG_SIM
 }
 
 #endif //UNITTEST
