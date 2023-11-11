@@ -11,6 +11,9 @@
 #include "h750_180_90_resources.h"
 #include "h750_180_90_specifications.h"
 
+#define LOG_MODULE "guix"
+#include "log.h"
+
 /* Define the number of pixels on the canvas */
 #define DEFAULT_CANVAS_PIXELS (MAIN_DISPLAY_WIDTH * MAIN_DISPLAY_HEIGHT)
 #define GX_DEMO_STACK_SIZE 4096
@@ -55,7 +58,7 @@ void guix_demo_application_define()
 
 static void guix_demo_worker()
 {
-
+    LOG_I("worker begin.");
     pin_device_create(&dcPin, GPIOE, GPIO_PIN_13, PIN_DEVICE_STATUS_INVERSE_NORMAL);
     spi_device_create(&spi4Dev, &hspi4, 4);
     spi_with_pins_device_create(&spi4pDev, &spi4Dev, NULL, NULL, &dcPin);
@@ -75,7 +78,7 @@ static void guix_demo_worker()
 
     gx_studio_display_configure(MAIN_DISPLAY, &st7735_graphics_driver_rgb565_setup,
                                 LANGUAGE_ENGLISH, MAIN_DISPLAY_THEME_1, &root_window);
-    gx_canvas_memory_define(root_window->gx_window_root_canvas, (GX_COLOR*)display_memory, DISPLAY_MEMORY_SIZE);
+    gx_canvas_memory_define(root_window->gx_window_root_canvas, (GX_COLOR *)display_memory, DISPLAY_MEMORY_SIZE);
     gx_studio_named_widget_create("window", (GX_WIDGET *)root_window, GX_NULL);
 
     /* Show the root window to make it visible. */
@@ -83,4 +86,5 @@ static void guix_demo_worker()
 
     /* Let GUIX run. */
     gx_system_start();
+    LOG_I("gx system started");
 }

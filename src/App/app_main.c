@@ -138,7 +138,7 @@ static void _sys_task_start(ULONG thread_input)
     while (1)
     {
         // 需要周期性处理的程序，对应裸机工程调用的SysTick_ISR
-        //bsp_ProPer1ms();
+        // bsp_ProPer1ms();
         tx_thread_sleep(1000);
     }
 };

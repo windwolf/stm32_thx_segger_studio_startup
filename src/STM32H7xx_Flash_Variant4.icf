@@ -73,7 +73,7 @@ define block stack with size = __STACKSIZE__, alignment = 8, /* fill =0xCD, */ r
 
 define block fastcode { section .fast^.*, section .init.*_IRQHandler, section .text.*_IRQHandler, section .text.*Callback, section .text.libc.* };
 define block rtos { section .*.text._tx_*, section .*.text._tx?_*,
-					section   .text._tx_*, section   .text._tx?_*, };
+					section   .text._tx_*, section   .text._tx?_*, symbol safe_printf };
 
 define block rtos_load { copy of block rtos };
 define block app { section .app^.* } except { section .*.text._tx_*, section .*.text._tx?_* };

@@ -23,7 +23,7 @@ void app_task_create(void *first_unused_memory)
 
     uart_stream_demo();
 
-    //fx_application_define();
+    fx_application_define();
 
     guix_demo_application_define();
 

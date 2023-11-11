@@ -49,8 +49,8 @@ static UINT sd_media_write(VOID *storage,
                            ULONG lun, UCHAR *data_pointer, ULONG number_blocks, ULONG lba,
                            ULONG *media_status);
 static UINT sd_media_status(VOID *storage,
-                             ULONG lun, ULONG media_id,
-                             ULONG *media_status);
+                            ULONG lun, ULONG media_id,
+                            ULONG *media_status);
 
 static UINT sd_media_read(VOID *storage,
                           ULONG lun, UCHAR *data_pointer, ULONG number_blocks, ULONG lba,
@@ -115,7 +115,7 @@ static void usbd_init()
     /* USER CODE END USB_Device_Init_PreTreatment_1 */
 
     /* initialize and link controller HAL driver to USBx */
-    _ux_dcd_stm32_initialize((ULONG)USB_OTG_HS, (ULONG)&hpcd_USB_OTG_FS);
+    _ux_dcd_stm32_initialize((ULONG)USB_OTG_FS, (ULONG)&hpcd_USB_OTG_FS);
 
     /* Start USB device by connecting the DP pullup */
     HAL_PCD_Start(&hpcd_USB_OTG_FS);
@@ -183,13 +183,6 @@ void usb_storage_demo()
     status = _ux_device_stack_class_register(_ux_system_slave_class_storage_name,
                                              _ux_device_class_storage_entry,
                                              1, 0, &parameter);
-
-    /* Check for error.  */
-    if (status != UX_SUCCESS)
-        error_handler();
-
-    /* Initialize the simulated device controller.  */
-    status = ux_dcd_stm32_initialize(NULL, &hpcd_USB_OTG_FS);
 
     /* Check for error.  */
     if (status != UX_SUCCESS)

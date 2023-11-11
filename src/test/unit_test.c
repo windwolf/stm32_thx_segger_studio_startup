@@ -6,7 +6,7 @@
 #include "algorithm/inc/pid_test.h"
 #include "stdint.h"
 #include "stdio.h"
-#define LOG_MODULE test
+#define LOG_MODULE "TEST"
 #include "log.h"
 #include "arm_math.h"
 
@@ -25,8 +25,13 @@ void test_after_hal_init()
 {
 #ifndef DEBUG_SIM
 	kf_test();
+	LOG_I("kf_test end");
+	
 	message_parser_test();
+	LOG_I("message_parser_test end");
+	
 	tree_accessor_test();
+	LOG_I("tree_accessor_test end");
 #endif //DEBUG_SIM
 }
 
